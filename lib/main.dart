@@ -215,92 +215,25 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedLanguage = Provider.of<SelectedLanguage>(context);
+    // Initialize the PersistentTabController if not already done
+    _controller ??= PersistentTabController(initialIndex: 0);
+
     return GetMaterialApp(
-      locale: _locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Consumer<LocationSelectionNotifier>(
-        builder: (context, locationNotifier, child) {
-          if (locationNotifier.hasSelectedLocation) {
-            return Scaffold(
-              body: PersistentTabView(
-                context,
-                controller: _controller,
-                screens: _buildScreens(),
-                items: _navBarItems(),
-                onItemSelected: (index) {
-                  if (index == 1 || index == 2) {
-                    // Check if the second item is selected
-                    final authProvider = Provider.of<MyAuthProvider>(context, listen: false);
-                    if (!authProvider.isAuthenticated) {
-                      // Add your Phone login logic here
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (BuildContext context) {
-                          return CustomPhoneInputWidget();
-                        },
-                      );
-                      _controller.jumpToTab(0);
-                      return;
-                    }
-                    else
-                      {
-                        // check if the index is 1 go to current_reservations page if the index is 2 go to profile page
-                        index==1 ? _controller.jumpToTab(1) : _controller.jumpToTab(2);
-                      }
-                  }
-                },
-                confineInSafeArea: true,
-                backgroundColor: Colors.white,
-                handleAndroidBackButtonPress: true,
-                resizeToAvoidBottomInset: true,
-                hideNavigationBarWhenKeyboardShows: true,
-                decoration: NavBarDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  colorBehindNavBar: Colors.white,
-                ),
-                popAllScreensOnTapOfSelectedTab: true,
-                popActionScreens: PopActionScreensType.all,
-                itemAnimationProperties: ItemAnimationProperties(
-                  duration: Duration(milliseconds: 200),
-                  curve: Curves.ease,
-                ),
-                screenTransitionAnimation: ScreenTransitionAnimation(
-                  animateTabTransition: true,
-                  curve: Curves.ease,
-                  duration: Duration(milliseconds: 200),
-                ),
-                navBarStyle: NavBarStyle.style8,
-              ),
-            );
-          } else {
-            return FutureBuilder(
-              // Use the pre-loaded Future
-              future: dataLoading,
-              builder: (context, snapshot) {
-                if (_connectivityResult == ConnectivityResult.none) {
-                  // Display a widget indicating no internet connectivity
-                  return ErrorOccuredWidget(img:'assets/images/connectionlost.png',title: selectedLanguage.translate("sorry"),message: [selectedLanguage.translate("nointernetfirstmsg"),selectedLanguage.translate("nointernetsecondmsg")]);
-                } else if (snapshot.connectionState == ConnectionState.waiting) {
-                  // Display a loading screen while data is being loaded
-                  return LoadingScreen();
-                } else if (snapshot.hasError) {
-                  // Handle other errors
-                  return ErrorOccuredWidget(img:'assets/images/error.png',title: selectedLanguage.translate("sorry"),message: [selectedLanguage.translate("errorfirstmsg"),selectedLanguage.translate("errorsecondmsg")]);
-                } else {
-                  // Once data is loaded, return the ChooseLocationWidget
-                  return ChooseLocationWidget();
-                }
-              },
-            );
-          }
-        },
+      // Keep existing properties like locale, localizationsDelegates, supportedLocales, etc.
+      home: Scaffold(
+        body: PersistentTabView(
+          context,
+          controller: _controller,
+          screens: _buildScreens(), // Ensure this method returns the list of your screens
+          items: _navBarItems(), // Ensure this method returns your navigation items
+          // ... other properties for PersistentTabView as required
+
+          // Set the navBarStyle to style12
+          navBarStyle: NavBarStyle.style14, // Change this to NavBarStyle.style12
+        ),
       ),
     );
   }
-
 
 
 
@@ -329,7 +262,7 @@ class _MyAppState extends State<MyApp> {
           width: 40,  // Set the width as per your requirement
           height: 40,  // Set the height as per your requirement
         ),
-        title: selectedLanguage.translate("services"),
+        title: selectedLanguage.translate("MyServices"),
         inactiveColorPrimary: Colors.black,
         activeColorPrimary: Color(0xFFD54D57),
       ),
