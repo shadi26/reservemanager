@@ -1,9 +1,7 @@
-import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
-import 'package:reserve/pages/ServiceSelection/ServiceSelection.dart';
 import '../../CustomWidgets/CustomDrawer.dart';
 import '../../CustomWidgets/MyCarouselWithDots.dart';
 import '../../CustomWidgets/MyCustomCalendar.dart';
@@ -282,7 +280,6 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
   @override
   void dispose() {
     _model.dispose();
-
     super.dispose();
   }
 
@@ -303,7 +300,6 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
         ),
       );
     }
-
     context.watch<FFAppState>();
     final authProvider = context.watch<MyAuthProvider>();
     final currentPageProvider =
@@ -542,72 +538,6 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                       ),
                     ),
                   ),
-
-                  // Container with location
-                  Container(
-                    width: double.infinity,
-                    color: Colors.grey[100], // Adjust opacity as needed
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 0.0),
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                launchWazeRoute(
-                                    32.808109644013044, 35.17401210979948);
-                                // Add your functionality here
-                                // For example, you can navigate to a new screen or perform some action
-                                // when the Waze icon is clicked
-                              },
-                              child: Image.asset(
-                                'assets/icons/wazeIcon.png',
-                                width: 30.0,
-                                height: 30.0,
-                              ),
-                            ),
-                            SizedBox(width: 10.0),
-                            Text(
-                              selectedLanguage.translate(
-                                  ("" + cardData['city']).toLowerCase()),
-                              style: TextStyle(
-                                  fontFamily: 'Amiri',
-                                  fontSize: 16.0,
-                                  color: Colors.black54),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Container containing the cards
-                  Container(
-                    width: double.infinity,
-                    color: Colors.grey[100], // Adjust opacity as needed
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 15.0),
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: cardDetails.map((card) {
-                            return Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: _buildCard(
-                                card["title"],
-                                card["icon"],
-                                card["isAvailable"],
-                                card["number"],
-                                card['tip'],
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                  ),
-
                   // New container with calendar
                   Container(
                     width: double.infinity,
@@ -676,60 +606,3 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
   }
 }
 
-Widget _buildCard(
-    String title, IconData icon, bool isAvailable, int number, String tip) {
-  final GlobalKey<TooltipState> tooltipKey = GlobalKey<TooltipState>();
-
-  return GestureDetector(
-    onTap: () {
-      tooltipKey.currentState?.ensureTooltipVisible();
-    },
-    child: Tooltip(
-      key: tooltipKey,
-      message: tip,
-      preferBelow: false,
-      child: Container(
-        width: 70, // Adjust the size of the card as needed
-        height: 70,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(30.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 30.0,
-              color: Colors.grey,
-            ),
-            SizedBox(height: 5.0),
-            if (isAvailable)
-              Icon(
-                Icons.check,
-                size: 15.0,
-                color: Colors.green,
-              )
-            else
-              Text(
-                number.toString(),
-                style: TextStyle(
-                  fontFamily: 'Amiri',
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-          ],
-        ),
-      ),
-    ),
-  );
-}

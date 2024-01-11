@@ -25,9 +25,8 @@ class _MyCustomCalendarState extends State<MyCustomCalendar> {
     return day.isBefore(DateTime.now().subtract(Duration(days: 1)));
   }
 
-  bool isNotPastOrFuture14Days(DateTime day) {
-    DateTime fourteenDaysFromNow = DateTime.now().add(Duration(days: 14));
-    return !(_isPastDay(day) || day.isAfter(fourteenDaysFromNow));
+  bool isFutureDay(DateTime day) {
+    return day.isAfter(DateTime.now().subtract(Duration(days: 1)));
   }
 
   @override
@@ -40,7 +39,7 @@ class _MyCustomCalendarState extends State<MyCustomCalendar> {
         lastDay: DateTime.utc(2033, 12, 31),
         focusedDay: _focusedDay ?? DateTime.now(),
         selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-        enabledDayPredicate: isNotPastOrFuture14Days,
+        enabledDayPredicate: isFutureDay,
         onDaySelected: (selectedDay, focusedDay) {
           setState(() {
             _selectedDay = selectedDay;
@@ -66,9 +65,8 @@ class _MyCustomCalendarState extends State<MyCustomCalendar> {
             color: Color(0xFFD54D57),
             shape: BoxShape.circle,
           ),
-          weekNumberTextStyle:TextStyle(color: Colors.black),
+          weekNumberTextStyle: TextStyle(color: Colors.black),
           outsideTextStyle: TextStyle(color: Colors.black),
-
         ),
         headerStyle: HeaderStyle(
           titleTextStyle: TextStyle(
