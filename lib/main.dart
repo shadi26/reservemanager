@@ -290,7 +290,7 @@ class _MyAppState extends State<MyApp> {
 
   List<Widget> _buildScreens() {
     return [
-      ReservationpageWidget(data: 'hahay'),
+      ReservationPage1Widget(),
       CurrentReservationsWidget(),
       ProfilePage()
     ];

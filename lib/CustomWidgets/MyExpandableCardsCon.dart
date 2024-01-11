@@ -39,7 +39,7 @@ class MyExpandableCon {
               name: 'DateReservation',
             ),
             // making new Widget but with the imageurls for this specific stadium
-            screen: ReservationPage1Widget(cardData: cardData),
+            screen: ReservationPage1Widget(),
             withNavBar: true,
           );
         },

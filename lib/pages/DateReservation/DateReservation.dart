@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:reserve/pages/ServiceSelection/ServiceSelection.dart';
@@ -23,35 +24,14 @@ import '../../Notifiers/SelectedLanguage.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
 
 List<Map<String, dynamic>> cardDetails = [
-  {
-    "title": "Ball",
-    "icon": Icons.sports_soccer,
-    "isAvailable": true,
-    "number": 5,
-    "tip": 'Ball included'
-  },
-  {
-    "title": "Clothing",
-    "icon": Icons.directions_run,
-    "isAvailable": true,
-    "number": 10,
-    "tip": 'coloring'
-  },
-  {
-    "title": "Players",
-    "icon": Icons.people,
-    "isAvailable": false,
-    "number": 15,
-    "tip": 'max players'
-  },
+
 ];
 
 class ReservationPage1Widget extends StatefulWidget {
-  final Map<String, dynamic> cardData; // Add this line
   List<String> imageUrls;
 
   ReservationPage1Widget(
-      {Key? key, required Map<String, dynamic> this.cardData})
+      {Key? key})
       : imageUrls = List<String>.from(cardData['imageUrls'] ?? []),
         super(key: key);
 
@@ -69,6 +49,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
   late String openningTime;
   late String closingTime;
   late String cardStatus;
+  Map<String, dynamic> cardData = {};
 
   // Access the SelectedServiceIdProvider using Provider.of
 
@@ -80,14 +61,14 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
     String currentDay = DateFormat.EEEE().format(DateTime.now());
 
     // Check if the current day exists in the schedule
-    if (widget.cardData['weeklyStadiumOpeningSchedule'][currentDay] != null) {
+    if (cardData['weeklyStadiumOpeningSchedule'][currentDay] != null) {
       // Get the opening and closing times for today
       openningTime =
-          widget.cardData['weeklyStadiumOpeningSchedule'][currentDay][0];
-      if (widget.cardData['weeklyStadiumOpeningSchedule'][currentDay][0] !=
+          cardData['weeklyStadiumOpeningSchedule'][currentDay][0];
+      if (cardData['weeklyStadiumOpeningSchedule'][currentDay][0] !=
           'Closed')
         closingTime =
-            widget.cardData['weeklyStadiumOpeningSchedule'][currentDay][1];
+            cardData['weeklyStadiumOpeningSchedule'][currentDay][1];
       else
         closingTime = 'Closed';
     } else {
@@ -237,42 +218,65 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
       return Icons.error;
     }
   }
+  
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<Map<String, dynamic>?> getDocumentById(String collection, String documentId) async {
+    try {
+      DocumentSnapshot doc = await _firestore.collection(collection).doc(documentId).get();
+      return doc.data() as Map<String, dynamic>?;
+    } catch (e) {
+      print("Error fetching document: $e");
+      return null;
+    }
+  }
+
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    getDocumentById('servicesInACity', '0Wq8I3H2GxaizVBUBY4r').then((data) {
+      if (data != null) {
+        setState(() {
+          cardData=data;
+
+          // Processing "cardDetails"
+          List<dynamic> dataFromDatabase = data["cardDetails"];
+          List<Map<String, dynamic>> listOfMaps = dataFromDatabase.cast<Map<String, dynamic>>();
+
+          List<Map<String, dynamic>> updatedCardDetails = listOfMaps.map((e) {
+            if (!e['icon'].toString().startsWith("IconData")) {
+              e['icon'] = getIconData(e['icon'].toString());
+            }
+            return e;
+          }).toList();
+          cardDetails = updatedCardDetails;
+
+          // Additional processing...
+          String currentDay = DateFormat('EEEE').format(DateTime.now());
+          cardStatus = ReusableMethods.determineCardStatus(
+              (data['weeklyStadiumOpeningSchedule'])[currentDay] ?? []);
+
+          decodedCircularImg = data["image"];
+          decodedCircularImgList = [];
+          decodedCircularImgList.add(decodedCircularImg);
+
+          // More processing as needed
+          getOpeningClosingTimesForToday();
+        });
+      }
+    }).catchError((error) {
+      // Handle any errors here
+      print("Error fetching data: $error");
+    });
+  }
+
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => ReservationPage1Model());
 
-/////////////////////////////////////////////////////************************************** danger zone *******************/////////////////////////////////////////////////////////////////////
-    List<dynamic> dataFromDatabase = widget.cardData["cardDetails"];
-    // Assuming you're confident that each element is a Map<String, dynamic>
-    List<Map<String, dynamic>> listOfMaps =
-        dataFromDatabase.cast<Map<String, dynamic>>();
-
-
-    List<Map<String, dynamic>> updatedCardDetails = listOfMaps.map((e) {
-      // Replace the 'icon' value with the corresponding IconData
-      // if e['icon'] contains a string of the icon name not an iconData
-      if (!e['icon'].toString().startsWith("IconData"))
-        e['icon'] = getIconData(e['icon'].toString());
-      return e;
-    }).toList();
-    cardDetails = updatedCardDetails;
-
-////////////////////////////////////////////////////////*********************************** danger zone done ***************/////////////////////////////////////////////////////////////////
-
-    // Determine the card status based on the current time and opening times
-    String currentDay = DateFormat('EEEE').format(DateTime.now());
-    cardStatus = ReusableMethods.determineCardStatus(
-        (widget.cardData['weeklyStadiumOpeningSchedule'])[currentDay] ?? []);
-
-
-    decodedCircularImg = widget.cardData["image"];
-    decodedCircularImgList = [];
-    decodedCircularImgList.add(decodedCircularImg);
-
-    // Call the function to set opening and closing times
-    getOpeningClosingTimesForToday();
   }
 
   @override
@@ -379,7 +383,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                     child: Stack(
                       children: [
                         MyCarouselWithDots(
-                          imageUrls: widget.cardData['imageUrls'],
+                          imageUrls: cardData['imageUrls'],
                           autoPlayImg: false,
                           enableEnlargeView: true,
                           dotPosition: DotPosition.top,
@@ -452,7 +456,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                             onTap: () {
                               showOpeningHoursDialog(
                                   context,
-                                  widget.cardData[
+                                  cardData[
                                       'weeklyStadiumOpeningSchedule']);
                             },
                             child: Container(
@@ -528,7 +532,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                       child: Center(
                         child: Text(
                           selectedLanguage.translate(
-                              ("" + widget.cardData['title']).toLowerCase()),
+                              ("" + cardData['title']).toLowerCase()),
                           style: TextStyle(
                             fontSize: 30.0,
                             fontFamily: 'Amiri',
@@ -566,7 +570,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                             SizedBox(width: 10.0),
                             Text(
                               selectedLanguage.translate(
-                                  ("" + widget.cardData['city']).toLowerCase()),
+                                  ("" + cardData['city']).toLowerCase()),
                               style: TextStyle(
                                   fontFamily: 'Amiri',
                                   fontSize: 16.0,
@@ -649,11 +653,11 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                             isScrollControlled: true,
                             builder: (BuildContext context) {
                               return Reservationpage2Widget(
-                                weeklyStadiumOpeningSchedule: widget
-                                    .cardData['weeklyStadiumOpeningSchedule'],
+                                weeklyStadiumOpeningSchedule:
+                                    cardData['weeklyStadiumOpeningSchedule'],
                                 selectedDate: _model.calendarSelectedDay?.start,
-                                stadImg: widget.cardData['image'],
-                                stadName: widget.cardData['title'],
+                                stadImg: cardData['image'],
+                                stadName: cardData['title'],
                               );
                             },
                           );
