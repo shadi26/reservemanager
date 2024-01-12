@@ -126,6 +126,7 @@ flutter:
   assets:
     - lib/l10n/
     - assets/icons/SwimmingPools.jpg
+    - assets/images/background.jpg
     - assets/icons/HorseRiding.jpg
     - assets/icons/FootballStadiums.jpg
     - assets/icons/PersonalTrainer.jpg

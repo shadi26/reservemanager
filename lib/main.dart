@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,7 @@ import 'package:reserve/Notifiers/UserIdProvider.dart';
 import 'package:reserve/pages/ProfilePage/ProfilePage.dart';
 import 'package:reserve/pages/ServiceSelection/ServiceSelection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'LoginPage/LoginPage.dart';
 import 'Notifiers/ReservationDoneNotifier.dart';
 import 'pages/Login/CustomPhoneInputWidget.dart';
 import 'Notifiers/DrawerUserName.dart';
@@ -85,6 +88,8 @@ Future<void> addTimestampToReservations() async {
     print('Error adding timestamp to documents: $e');
   }
 }
+
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -192,7 +197,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _controller = PersistentTabController(initialIndex: 0); // Initialize the controller
+    _controller = PersistentTabController(initialIndex: 0); // Set the initial index to 0 (MyServices page).
     _connectivityResult = ConnectivityResult.none; // Initialize with a default value
     dataLoading = loadData();
     checkConnectivity();
@@ -215,22 +220,65 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize the PersistentTabController if not already done
-    _controller ??= PersistentTabController(initialIndex: 0);
-
+    final selectedLanguage = Provider.of<SelectedLanguage>(context);
     return GetMaterialApp(
-      // Keep existing properties like locale, localizationsDelegates, supportedLocales, etc.
-      home: Scaffold(
-        body: PersistentTabView(
-          context,
-          controller: _controller,
-          screens: _buildScreens(), // Ensure this method returns the list of your screens
-          items: _navBarItems(), // Ensure this method returns your navigation items
-          // ... other properties for PersistentTabView as required
-
-          // Set the navBarStyle to style12
-          navBarStyle: NavBarStyle.style14, // Change this to NavBarStyle.style12
-        ),
+      locale: _locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Consumer<MyAuthProvider>(
+        builder: (context, MyAuthProvider, child) {
+          if (MyAuthProvider.isAuthenticated) {
+            return Scaffold(
+              body: PersistentTabView(
+                context,
+                controller: _controller,
+                screens: _buildScreens(),
+                items: _navBarItems(),
+                confineInSafeArea: true,
+                backgroundColor: Colors.white,
+                handleAndroidBackButtonPress: true,
+                resizeToAvoidBottomInset: true,
+                hideNavigationBarWhenKeyboardShows: true,
+                decoration: NavBarDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  colorBehindNavBar: Colors.white,
+                ),
+                popAllScreensOnTapOfSelectedTab: true,
+                popActionScreens: PopActionScreensType.all,
+                itemAnimationProperties: ItemAnimationProperties(
+                  duration: Duration(milliseconds: 200),
+                  curve: Curves.ease,
+                ),
+                screenTransitionAnimation: ScreenTransitionAnimation(
+                  animateTabTransition: true,
+                  curve: Curves.ease,
+                  duration: Duration(milliseconds: 200),
+                ),
+                navBarStyle: NavBarStyle.style8,
+              ),
+            );
+          } else {
+            return FutureBuilder(
+              // Use the pre-loaded Future
+              future: dataLoading,
+              builder: (context, snapshot) {
+                if (_connectivityResult == ConnectivityResult.none) {
+                  // Display a widget indicating no internet connectivity
+                  return ErrorOccuredWidget(img:'assets/images/connectionlost.png',title: selectedLanguage.translate("sorry"),message: [selectedLanguage.translate("nointernetfirstmsg"),selectedLanguage.translate("nointernetsecondmsg")]);
+                } else if (snapshot.connectionState == ConnectionState.waiting) {
+                  // Display a loading screen while data is being loaded
+                  return LoadingScreen();
+                } else if (snapshot.hasError) {
+                  // Handle other errors
+                  return ErrorOccuredWidget(img:'assets/images/error.png',title: selectedLanguage.translate("sorry"),message: [selectedLanguage.translate("errorfirstmsg"),selectedLanguage.translate("errorsecondmsg")]);
+                } else {
+                  // Once data is loaded, return the ChooseLocationWidget
+                  return LoginPage();
+                }
+              },
+            );
+          }
+        },
       ),
     );
   }

@@ -111,7 +111,7 @@ class LoginPage extends StatelessWidget {
                   height: 400,
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                          image: AssetImage('assets/images/background.jpeg'),
+                          image: AssetImage('assets/images/background.jpg'),
                           fit: BoxFit.fill)),
                   child: Stack(
                     children: <Widget>[
@@ -274,15 +274,18 @@ class LoginPage extends StatelessWidget {
                               if (userCredential.user != null) {
                                 String Name = await fetchUserName();
                                 Provider.of<UserNameProvider>(context, listen: false).setUserName("Welcome $Name");
+
+                                // Set isAuthenticated to true in MyAuthProvider
+                                Provider.of<MyAuthProvider>(context, listen: false).setAuthenticated(true);
                               }
 
                               // Proceed with your logic after successful sign-in
                               // For example, navigate to another screen
-                              Navigator.pop(context);
                             } catch (e) {
                               // Handle error (e.g., show a message)
                             }
                           },
+
                           child: Container(
                             height: 50,
                             decoration: BoxDecoration(
