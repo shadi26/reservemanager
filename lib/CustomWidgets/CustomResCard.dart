@@ -118,6 +118,90 @@ class _CustomResCardState extends State<CustomResCardWidget> {
   late int LinearProgressStartTime;
 
 
+  Future<void> acceptReservation(
+      String documentId, // Document ID of the reservation
+      ReservationModel model,
+      ReservationDoneNotifier numberProvider,
+      BuildContext context,
+      ) async {
+    try {
+      await FirebaseFirestore.instance.collection('Reservations').doc(documentId).update({
+        'status': 'Accepted', // Update the status to 'accepted'
+      });
+
+      // Show a Snackbar with the success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Reservation accepted successfully',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Amiri',
+              color: Colors.white,
+              fontSize: 15,
+            ),
+          ),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          backgroundColor: Colors.green[400]!,
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      // Update the remaining time in the provider
+      model.updateRemainingTime(widget.timeRmainingInSeconds);
+
+      // Increment the counter in the ReservationNumberProvider
+      numberProvider.notifyReservationDone();
+    } catch (error) {
+      print('Error accepting reservation: $error');
+    }
+  }
+
+  Future<void> rejectReservation(
+      String documentId, // Document ID of the reservation
+      ReservationModel model,
+      ReservationDoneNotifier numberProvider,
+      BuildContext context,
+      ) async {
+    try {
+      await FirebaseFirestore.instance.collection('Reservations').doc(documentId).update({
+        'status': 'Rejected', // Update the status to 'accepted'
+      });
+
+      // Show a Snackbar with the success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Reservation Rejected',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Amiri',
+              color: Colors.white,
+              fontSize: 15,
+            ),
+          ),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          backgroundColor: Colors.red[400]!,
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      // Update the remaining time in the provider
+      model.updateRemainingTime(widget.timeRmainingInSeconds);
+
+      // Increment the counter in the ReservationNumberProvider
+      numberProvider.notifyReservationDone();
+    } catch (error) {
+      print('Error accepting reservation: $error');
+    }
+  }
+
 
   @override
   void initState() {
@@ -559,7 +643,7 @@ class _CustomResCardState extends State<CustomResCardWidget> {
                                   cancelButtonText: selectedLanguage.translate('nobtn'),
                                   onConfirm: () {
                                     setState(() {
-                                      deleteReservation(
+                                      rejectReservation(
                                           widget.rid, model, numberProvider, context);
                                     });
                                   },
@@ -585,7 +669,11 @@ class _CustomResCardState extends State<CustomResCardWidget> {
                             SizedBox(width: 10), // Add some space between the buttons
                             ElevatedButton(
                               onPressed: () {
-                                // Add the functionality for the reservationaccept button here
+                                // Call the acceptReservation function when the "accept" button is pressed
+                                setState(() {
+                                  acceptReservation(
+                                      widget.rid, model, numberProvider, context);
+                                });
                               },
                               child: Text(
                                 selectedLanguage.translate('reservationaccept'), // Replace with the text you want for this button
