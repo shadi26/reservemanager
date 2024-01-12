@@ -645,6 +645,7 @@ class _CustomResCardState extends State<CustomResCardWidget> {
                                     setState(() {
                                       rejectReservation(
                                           widget.rid, model, numberProvider, context);
+                                      resResult='Rejected';
                                     });
                                   },
                                 );
@@ -673,7 +674,9 @@ class _CustomResCardState extends State<CustomResCardWidget> {
                                 setState(() {
                                   acceptReservation(
                                       widget.rid, model, numberProvider, context);
-                                });
+                                  resResult='Accepted';
+                                }
+                                );
                               },
                               child: Text(
                                 selectedLanguage.translate('reservationaccept'), // Replace with the text you want for this button
