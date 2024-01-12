@@ -544,42 +544,67 @@ class _CustomResCardState extends State<CustomResCardWidget> {
                 Column(
                   children: [
                     Padding(
-                      padding:
-                      const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                      padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                       child: Container(
                         alignment: AlignmentDirectional.bottomEnd,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            ConfirmationDialog.show(
-                              context: context,
-                              title: selectedLanguage.translate('cancelcurrentres'),
-                              content: selectedLanguage.translate('cancelcurrentresmsg'),
-                              confirmButtonText: selectedLanguage.translate('yesbtn'),
-                              cancelButtonText: selectedLanguage.translate('nobtn'),
-                              onConfirm: () {
-                                setState(() {
-                                  deleteReservation(
-                                      widget.rid, model, numberProvider,context);
-                                });
+                        child: Row(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                ConfirmationDialog.show(
+                                  context: context,
+                                  title: selectedLanguage.translate('cancelcurrentres'),
+                                  content: selectedLanguage.translate('cancelcurrentresmsg'),
+                                  confirmButtonText: selectedLanguage.translate('yesbtn'),
+                                  cancelButtonText: selectedLanguage.translate('nobtn'),
+                                  onConfirm: () {
+                                    setState(() {
+                                      deleteReservation(
+                                          widget.rid, model, numberProvider, context);
+                                    });
+                                  },
+                                );
                               },
-                            );
-                          },
-                          child: Text(
-                            selectedLanguage.translate('reservationcancel'),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'Amiri',
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              child: Text(
+                                selectedLanguage.translate('reservationreject'),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Amiri',
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                primary: Color(0xFFD54D57),
+                                onPrimary: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                              ),
                             ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            primary: Color(0xFFD54D57),
-                            onPrimary: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
+                            SizedBox(width: 10), // Add some space between the buttons
+                            ElevatedButton(
+                              onPressed: () {
+                                // Add the functionality for the reservationaccept button here
+                              },
+                              child: Text(
+                                selectedLanguage.translate('reservationaccept'), // Replace with the text you want for this button
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Amiri',
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.green, // Set the color you want
+                                onPrimary: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
                     ),
