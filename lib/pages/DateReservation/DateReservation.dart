@@ -1,35 +1,28 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
-import '../../CustomWidgets/CustomDrawer.dart';
-import '../../CustomWidgets/MyCarouselWithDots.dart';
-import '../../CustomWidgets/MyCustomCalendar.dart';
-import '../../Notifiers/AuthProvider.dart';
-import '../../Notifiers/CurrentPageProvider.dart';
-import '../../Notifiers/SelectedServiceIdProvider.dart';
-import '../../Notifiers/UserIdProvider.dart';
-import '../Login/CustomPhoneInputWidget.dart';
-import '../ReservationCheckout/ReservationCheckout.dart';
-import '../../CustomWidgets/ReusableMethods.dart';
-import '/flutter_flow/flutter_flow_util.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:reserve/CustomWidgets/ReusableMethods.dart';
+import 'package:reserve/Notifiers/AuthProvider.dart';
+import 'package:reserve/Notifiers/CurrentPageProvider.dart';
+import 'package:reserve/Notifiers/SelectedLanguage.dart';
+import 'package:reserve/Notifiers/SelectedServiceIdProvider.dart';
+import 'package:reserve/Notifiers/UserIdProvider.dart';
+import 'package:reserve/CustomWidgets/CustomDrawer.dart';
+import 'package:reserve/CustomWidgets/MyCustomCalendar.dart';
+import 'package:reserve/app_state.dart';
+import 'package:reserve/flutter_flow/flutter_flow_model.dart';
+import 'package:reserve/pages/Login/CustomPhoneInputWidget.dart';
+import 'package:reserve/pages/ReservationCheckout/ReservationCheckout.dart';
 import 'reservation_page1_model.dart';
-export 'reservation_page1_model.dart';
-import '../../Notifiers/SelectedLanguage.dart';
-import 'package:url_launcher/url_launcher.dart' as url_launcher;
-
-List<Map<String, dynamic>> cardDetails = [
-
-];
 
 class ReservationPage1Widget extends StatefulWidget {
   List<String> imageUrls;
 
-  ReservationPage1Widget(
-      {Key? key})
+  ReservationPage1Widget({Key? key})
       : imageUrls = List<String>.from(cardData['imageUrls'] ?? []),
         super(key: key);
 
@@ -38,197 +31,119 @@ class ReservationPage1Widget extends StatefulWidget {
 }
 
 class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
-  int counter =
-      0; // counter for the times day changed so it does nothing on first time
+  int counter = 0;
   late ReservationPage1Model _model;
-  late List<Uint8List> decodedImages;
   late String decodedCircularImg;
   late List<dynamic> decodedCircularImgList;
   late String openningTime;
   late String closingTime;
   late String cardStatus;
   Map<String, dynamic> cardData = {};
-
-  // Access the SelectedServiceIdProvider using Provider.of
+  bool isContainerVisible = false;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // Add this function inside the _ReservationPage1WidgetState class
-  void getOpeningClosingTimesForToday() {
-    // Format full day name (e.g., 'Monday', 'Tuesday', etc.)
+  void getOpeningClosingTimesForToday(Map<String, dynamic> cardData) {
     String currentDay = DateFormat.EEEE().format(DateTime.now());
 
-    // Check if the current day exists in the schedule
     if (cardData['weeklyStadiumOpeningSchedule'][currentDay] != null) {
-      // Get the opening and closing times for today
-      openningTime =
-          cardData['weeklyStadiumOpeningSchedule'][currentDay][0];
-      if (cardData['weeklyStadiumOpeningSchedule'][currentDay][0] !=
-          'Closed')
-        closingTime =
-            cardData['weeklyStadiumOpeningSchedule'][currentDay][1];
-      else
+      openningTime = cardData['weeklyStadiumOpeningSchedule'][currentDay][0];
+      if (cardData['weeklyStadiumOpeningSchedule'][currentDay][0] != 'Closed') {
+        closingTime = cardData['weeklyStadiumOpeningSchedule'][currentDay][1];
+      } else {
         closingTime = 'Closed';
+      }
     } else {
-      // Set default values if no schedule is available for the current day
       openningTime = 'N/A';
       closingTime = 'N/A';
     }
   }
 
-  String capitalize(String input) {
-    if (input == null || input.isEmpty) {
-      return input;
-    }
-    return input[0].toUpperCase() + input.substring(1);
-  }
-
-  Future<void> launchWazeRoute(double lat, double lng) async {
-    var url = 'waze://?ll=$lat,$lng&navigate=yes';
-    var fallbackUrl =
-        'https://www.waze.com/ul?ll=$lat,$lng&navigate=yes&zoom=17';
-    try {
-      if (await url_launcher.canLaunchUrl(Uri.parse(url))) {
-        await url_launcher.launchUrl(Uri.parse(url));
-      } else {
-        print('Cannot launch Waze, falling back to the fallback URL');
-        await url_launcher.launchUrl(Uri.parse(fallbackUrl));
-      }
-    } catch (e) {
-      print('Failed to launch Waze, falling back to the fallback URL');
-      await url_launcher.launchUrl(Uri.parse(fallbackUrl));
-    }
-  }
-
-  void showOpeningHoursDialog(
-      BuildContext context, Map<String, dynamic> weeklySchedule) {
-    // Get the selected language from the provider
-    final selectedLanguage =
-        Provider.of<SelectedLanguage>(context, listen: false);
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Color(0xFFD54D57), // Set the background color
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              // Set to min to avoid additional space
-              children: [
-                Center(
-                  child: Text(
-                    selectedLanguage.translate('workinghours'),
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontFamily: 'Amiri', // Set the font family
-                    ),
-                  ),
-                ),
-                Divider(color: Colors.white), // Set divider color
-                IntrinsicHeight(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(7, (index) {
-                      String day = [
-                        selectedLanguage.translate('sunday'),
-                        selectedLanguage.translate('monday'),
-                        selectedLanguage.translate('tuesday'),
-                        selectedLanguage.translate('wednesday'),
-                        selectedLanguage.translate('thursday'),
-                        selectedLanguage.translate('friday'),
-                        selectedLanguage.translate('saturday'),
-                      ][index];
-
-                      List<dynamic> openingHours = weeklySchedule[
-                              capitalize(selectedLanguage.untranslate(day))] ??
-                          [];
-
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              day,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontFamily: 'Amiri', // Set the font family
-                              ),
-                            ),
-                            Column(
-                              children: [
-                                if (openingHours.isNotEmpty)
-                                  Text(
-                                    openingHours.join(' - '),
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                      fontFamily:
-                                          'Amiri', // Set the font family
-                                    ),
-                                  ),
-                                if (openingHours.isEmpty)
-                                  Center(
-                                    child: Text(
-                                      'Closed',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                        fontFamily:
-                                            'Amiri', // Set the font family
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
-                    }),
-                  ),
-                ),
-              ],
-            ),
+  Widget buildScheduleContainer(Map<String, dynamic> cardData) {
+    return isContainerVisible
+        ? Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+            color: Colors.grey.withOpacity(0.6),
+            width: 1.2,
           ),
-        );
-      },
-    );
+          borderRadius: BorderRadius.circular(10.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 10,
+              offset: Offset(0, 5), // Adjust the offset if needed
+            ),
+          ],
+        ),
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Days of the Week',
+              style: TextStyle(
+                fontSize: 25.0,
+                fontFamily: 'Amiri',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(50.0, 5.0, 50.0, 5.0),
+              child: Divider(
+                color: Colors.grey.withOpacity(0.6),
+                thickness: 1.2,
+              ),
+            ),
+            SizedBox(height: 10.0),
+            for (String day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])
+              Column(
+                children: [
+                  DaySchedule(
+                    day: day,
+                    hours: cardData['weeklyStadiumOpeningSchedule'][day] != null
+                        ? cardData['weeklyStadiumOpeningSchedule'][day][0]
+                        : 'N/A',
+                  ),
+                  Divider(
+                    color: Colors.grey.withOpacity(0.6),
+                    thickness: 1.2,
+                  ),
+                ],
+              ),
+            IconButton(
+              icon: Icon(
+                isContainerVisible
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down,
+                size: 30.0,
+              ),
+              onPressed: toggleScheduleContainerVisibility,
+            ),
+          ],
+        ),
+
+      ),
+    )
+        : Container();
   }
 
-  IconData getIconData(String iconName) {
-    // Map to associate icon names with IconData
-    Map<String, IconData> iconMap = {
-      'sports_soccer': Icons.sports_soccer,
-      'directions_run': Icons.directions_run,
-      'people': Icons.people,
-      // Add more icons as needed
-    };
-    // Check if the iconName exists in the map
-    if (iconMap.containsKey(iconName)) {
-      return iconMap[iconName]!;
-    } else {
-      // If the iconName is not found, return a default icon (you can change this as needed)
-      return Icons.error;
-    }
-  }
-  
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<Map<String, dynamic>?> getDocumentById(String collection, String documentId) async {
+  Future<Map<String, dynamic>?> getDocumentById(
+      String collection, String documentId) async {
     try {
-      DocumentSnapshot doc = await _firestore.collection(collection).doc(documentId).get();
-      return doc.data() as Map<String, dynamic>?;
-    } catch (e) {
-      print("Error fetching document: $e");
+      var document =
+      await FirebaseFirestore.instance.collection(collection).doc(documentId).get();
+      return document.data();
+    } catch (error) {
+      print("Error fetching data: $error");
       return null;
     }
   }
-
 
   @override
   void didChangeDependencies() {
@@ -236,45 +151,25 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
     getDocumentById('servicesInACity', '0Wq8I3H2GxaizVBUBY4r').then((data) {
       if (data != null) {
         setState(() {
-          cardData=data;
-
-          // Processing "cardDetails"
-          List<dynamic> dataFromDatabase = data["cardDetails"];
-          List<Map<String, dynamic>> listOfMaps = dataFromDatabase.cast<Map<String, dynamic>>();
-
-          List<Map<String, dynamic>> updatedCardDetails = listOfMaps.map((e) {
-            if (!e['icon'].toString().startsWith("IconData")) {
-              e['icon'] = getIconData(e['icon'].toString());
-            }
-            return e;
-          }).toList();
-          cardDetails = updatedCardDetails;
-
-          // Additional processing...
+          cardData = data;
+          getOpeningClosingTimesForToday(cardData);
           String currentDay = DateFormat('EEEE').format(DateTime.now());
           cardStatus = ReusableMethods.determineCardStatus(
               (data['weeklyStadiumOpeningSchedule'])[currentDay] ?? []);
-
           decodedCircularImg = data["image"];
           decodedCircularImgList = [];
           decodedCircularImgList.add(decodedCircularImg);
-
-          // More processing as needed
-          getOpeningClosingTimesForToday();
         });
       }
     }).catchError((error) {
-      // Handle any errors here
       print("Error fetching data: $error");
     });
   }
-
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => ReservationPage1Model());
-
   }
 
   @override
@@ -283,27 +178,25 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
     super.dispose();
   }
 
+  // Function to toggle the visibility of the schedule container
+  void toggleScheduleContainerVisibility() {
+    setState(() {
+      isContainerVisible = !isContainerVisible;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Get the selected language from the provider
     final selectedLanguage = Provider.of<SelectedLanguage>(context);
-    // Access the SelectedServiceIdProvider using Provider.of
     String serviceId =
         Provider.of<SelectedServiceIdProvider>(context).selectedServiceId ?? '';
-    // Access the UserIdProvider using Provider.of
     String userId = Provider.of<UserIdProvider>(context).userId ?? '';
-    if (isiOS) {
-      SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(
-          statusBarBrightness: Theme.of(context).brightness,
-          systemStatusBarContrastEnforced: true,
-        ),
-      );
-    }
+
     context.watch<FFAppState>();
     final authProvider = context.watch<MyAuthProvider>();
     final currentPageProvider =
-        Provider.of<CurrentPageProvider>(context, listen: false);
+    Provider.of<CurrentPageProvider>(context, listen: false);
+
     return GestureDetector(
       onTap: () => _model.unfocusNode.canRequestFocus
           ? FocusScope.of(context).requestFocus(_model.unfocusNode)
@@ -311,7 +204,6 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: Colors.grey[100],
-        // Set the background color to white
         appBar: AppBar(
           backgroundColor: Color(0xFFD54D57),
           automaticallyImplyLeading: true,
@@ -330,8 +222,8 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
               borderRadius: BorderRadius.circular(8.0),
               child: Image.asset(
                 'assets/icons/ReserveLogo.png',
-                width: 400.0, // Increase the width value
-                height: 100.0, // Increase the height value
+                width: 400.0,
+                height: 100.0,
                 fit: BoxFit.contain,
               ),
             ),
@@ -345,8 +237,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                 hoverColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 onTap: () {
-                  Navigator.pop(
-                      context); // This line will pop the current screen off the stack
+                  Navigator.pop(context);
                 },
                 child: Icon(
                   Icons.arrow_forward_ios,
@@ -359,33 +250,21 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
           centerTitle: true,
           elevation: 4.0,
         ),
-        drawer: CustomDrawer(
-          isAuthenticated: authProvider.isAuthenticated,
-        ),
         body: SafeArea(
           top: true,
           child: SingleChildScrollView(
             child: Container(
               width: double.infinity,
-              color: Colors.grey[100], // Adjust opacity as needed
+              color: Colors.grey[100],
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Container containing the image carousel and profile icon
                   Container(
                     width: double.infinity,
-                    height: 310,
-                    color: Colors.grey[100], // Adjust opacity as needed
+                    height: 210,
+                    color: Colors.grey[100],
                     child: Stack(
                       children: [
-                        MyCarouselWithDots(
-                          imageUrls: cardData['imageUrls'],
-                          autoPlayImg: false,
-                          enableEnlargeView: true,
-                          dotPosition: DotPosition.top,
-                        ),
-
-                        //white container above the carousel
                         Positioned(
                           bottom: 78.0,
                           left: 0.0,
@@ -397,12 +276,9 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                                 colors: [
-                                  Colors.white.withOpacity(0.0),
-                                  // Transparent at the top
+                                  Colors.white.withOpacity(0.5),
                                   Colors.white.withOpacity(0.12),
-                                  // Half transparent in the middle
                                   Colors.white.withOpacity(0.7),
-                                  // Almost fully opaque at the bottom
                                 ],
                               ),
                               border: Border(
@@ -412,99 +288,22 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                                 ),
                               ),
                             ),
-                            // Add your content for the container here
                           ),
                         ),
-
-                        //conatiner for open or closed
-                        Positioned(
-                          left: 30.0,
-                          bottom: 65.0,
-                          child: Container(
-                            height: 35,
-                            width: 70,
-                            decoration: BoxDecoration(
-                              color: cardStatus != 'closed'
-                                  ? Color(0xFF98CA05)
-                                  : Color(0xFFBE0133),
-                              // Set your desired background color
-                              borderRadius: BorderRadius.circular(
-                                  20.0), // Set your desired border radius
-                            ),
-                            child: Center(
-                              child: Text(
-                                selectedLanguage.translate(cardStatus),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Amiri',
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        //container for working time
-                        Positioned(
-                          bottom: 65.0,
-                          right: 10.0,
-                          child: GestureDetector(
-                            onTap: () {
-                              showOpeningHoursDialog(
-                                  context,
-                                  cardData[
-                                      'weeklyStadiumOpeningSchedule']);
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
-                                color: Color(0xFFD54D57),
-                                // Set your desired background color
-                                borderRadius: BorderRadius.circular(
-                                    20.0), // Set your desired border radius
-                              ),
-                              child: Row(
-                                children: [
-                                  Image.asset(
-                                    'assets/icons/clock.png',
-                                    height: 16.0,
-                                    // Adjust the height of the icon as needed
-                                    width:
-                                        16.0, // Adjust the width of the icon as needed
-                                  ),
-                                  SizedBox(
-                                    width: 5.0,
-                                  ),
-                                  Text(
-                                    openningTime != 'Closed'
-                                        ? '$openningTime-$closingTime'
-                                        : selectedLanguage.translate('closed'),
-                                    style: TextStyle(
-                                      fontSize: 12.0,
-                                      fontFamily: 'Amiri',
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
                         Positioned(
                           bottom: 15.0,
                           left: 100.0,
                           right: 100.0,
                           child: GestureDetector(
-
                             child: Container(
                               width: 160.0,
                               height: 160.0,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
-                                  image: CachedNetworkImageProvider(decodedCircularImg) ,
+                                  image: CachedNetworkImageProvider(
+                                    decodedCircularImg,
+                                  ),
                                   fit: BoxFit.cover,
                                 ),
                                 border: Border.all(
@@ -518,17 +317,15 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                       ],
                     ),
                   ),
-
-                  // Container with stadium name
                   Container(
                     width: double.infinity,
-                    color: Colors.grey[100], // Adjust opacity as needed
+                    color: Colors.grey[100],
                     child: Padding(
                       padding: EdgeInsets.symmetric(vertical: 5.0),
                       child: Center(
                         child: Text(
-                          selectedLanguage.translate(
-                              ("" + cardData['title']).toLowerCase()),
+                          selectedLanguage
+                              .translate(("" + cardData['title']).toLowerCase()),
                           style: TextStyle(
                             fontSize: 30.0,
                             fontFamily: 'Amiri',
@@ -538,7 +335,47 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                       ),
                     ),
                   ),
-                  // New container with calendar
+
+                  // Button to toggle the visibility of the schedule container
+                  if (!isContainerVisible)
+                  Container(
+                    width: 250,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 3,
+                          blurRadius: 5,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Working Days',
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(width: 8.0),
+                        IconButton(
+                          icon: Icon(
+                            isContainerVisible
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                            size: 30.0,
+                          ),
+                          onPressed: toggleScheduleContainerVisibility,
+                        ),
+                      ],
+                    ),
+                  ),
+                  buildScheduleContainer(cardData),
                   Container(
                     width: double.infinity,
                     margin: EdgeInsets.all(16.0),
@@ -561,19 +398,13 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                           _model.calendarSelectedDay = DateTimeRange(
                               start: selectedDate, end: selectedDate);
                         });
-                        String? uid =
-                            Provider.of<UserIdProvider>(context, listen: false)
-                                .userId;
-                        // Get the selected payment method from the PaymentMethodNotifier
+                        String? uid = Provider.of<UserIdProvider>(context, listen: false).userId;
                         if (uid == null) {
                           currentPageProvider.setCurrentPage("DateReservation");
-                          // Add your Phone login logic here
                           showModalBottomSheet(
                             context: context,
                             isScrollControlled: true,
-                            // Allow the bottom sheet to take up the full screen height
                             builder: (BuildContext context) {
-                              // Return the widget that you want to show
                               return CustomPhoneInputWidget();
                             },
                           );
@@ -583,8 +414,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                             isScrollControlled: true,
                             builder: (BuildContext context) {
                               return Reservationpage2Widget(
-                                weeklyStadiumOpeningSchedule:
-                                    cardData['weeklyStadiumOpeningSchedule'],
+                                weeklyStadiumOpeningSchedule: cardData['weeklyStadiumOpeningSchedule'],
                                 selectedDate: _model.calendarSelectedDay?.start,
                                 stadImg: cardData['image'],
                                 stadName: cardData['title'],
@@ -601,6 +431,220 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class DaySchedule extends StatefulWidget {
+  final String day;
+  final String hours;
+
+  DaySchedule({required this.day, required this.hours});
+
+  @override
+  _DayScheduleState createState() => _DayScheduleState();
+}
+
+class _DayScheduleState extends State<DaySchedule> {
+  String selectedOption = 'Opened';
+  String selectedOpeningHour = '9:00 AM';
+  String selectedClosingHour = '5:00 PM';
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center, // Center the content horizontally
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center, // Center the content horizontally
+            children: [
+              Text(
+                widget.day,
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Amiri',
+                ),
+              ),
+              SizedBox(width: 8.0),
+              DropdownButton2<String>(
+                isExpanded: true,
+                value: selectedOption,
+                onChanged: (value) {
+                  setState(() {
+                    selectedOption = value!;
+                  });
+                },
+                items: ['Opened', 'Closed'].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value,style: TextStyle(
+                      fontFamily: 'Amiri',
+                      fontSize: 18.0,
+                    ),
+                    ),
+                  );
+                }).toList(),
+                buttonStyleData: ButtonStyleData(
+                  height: 50.0,
+                  width: 100.0,
+                  padding: const EdgeInsets.only(left: 3.0, right: 3.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+
+                    color: Colors.transparent,
+                  ),
+                  elevation: 0,
+                ),
+                dropdownStyleData: DropdownStyleData(
+                  maxHeight: 200,
+                  width: 100.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  offset: const Offset(0, 0),
+                  scrollbarTheme: ScrollbarThemeData(
+                    radius: const Radius.circular(20),
+                    thickness: MaterialStateProperty.all<double>(4),
+                    thumbVisibility: MaterialStateProperty.all<bool>(true),
+                  ),
+                ),
+                menuItemStyleData: const MenuItemStyleData(
+                  height: 30,
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                ),
+              ),
+            ],
+          ),
+
+          if (selectedOption == 'Opened') ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center, // Center the content horizontally
+              children: [
+                Text(
+                  'From:',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Amiri',
+                  ),
+                ),
+                SizedBox(width: 10.0),
+                DropdownButton2<String>(
+                  isExpanded: true,
+                  value: selectedOpeningHour,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedOpeningHour = value!;
+                    });
+                  },
+                  items: ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value,style: TextStyle(
+                        fontFamily: 'Amiri',
+                        fontSize: 18.0,
+                      ),
+                      ),
+                    );
+                  }).toList(),
+                  buttonStyleData: ButtonStyleData(
+                    height: 50.0,
+                    width: 100.0,
+                    padding: const EdgeInsets.only(left: 3.0, right: 3.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+
+                      color: Colors.transparent,
+                    ),
+                    elevation: 0,
+                  ),
+                  dropdownStyleData: DropdownStyleData(
+                    maxHeight: 200,
+                    width: 100.0,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
+                    ),
+                    offset: const Offset(0, 0),
+                    scrollbarTheme: ScrollbarThemeData(
+                      radius: const Radius.circular(20),
+                      thickness: MaterialStateProperty.all<double>(4),
+                      thumbVisibility: MaterialStateProperty.all<bool>(true),
+                    ),
+                  ),
+                  menuItemStyleData: const MenuItemStyleData(
+                    height: 30,
+                    padding: EdgeInsets.only(left: 10, right: 10),
+                  ),
+                ),
+                SizedBox(width: 20.0),
+                Text(
+                  'To:',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Amiri',
+                  ),
+                ),
+                SizedBox(width: 10.0),
+                DropdownButton2<String>(
+                  isExpanded: true,
+                  value: selectedClosingHour,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedClosingHour = value!;
+                    });
+                  },
+                  items: ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value,style: TextStyle(
+                        fontFamily: 'Amiri',
+                        fontSize: 18.0,
+                      ),
+                      ),
+                    );
+                  }).toList(),
+                  buttonStyleData: ButtonStyleData(
+                    height: 50.0,
+                    width: 100.0,
+                    padding: const EdgeInsets.only(left: 3.0, right: 3.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+
+                      color: Colors.transparent,
+                    ),
+                    elevation: 0,
+                  ),
+                  dropdownStyleData: DropdownStyleData(
+                    maxHeight: 200,
+                    width: 100.0,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
+                    ),
+                    offset: const Offset(0, 0),
+                    scrollbarTheme: ScrollbarThemeData(
+                      radius: const Radius.circular(20),
+                      thickness: MaterialStateProperty.all<double>(4),
+                      thumbVisibility: MaterialStateProperty.all<bool>(true),
+                    ),
+                  ),
+                  menuItemStyleData: const MenuItemStyleData(
+                    height: 30,
+                    padding: EdgeInsets.only(left: 10, right: 10),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ],
       ),
     );
   }
