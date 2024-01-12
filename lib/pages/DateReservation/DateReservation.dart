@@ -11,7 +11,6 @@ import 'package:reserve/Notifiers/CurrentPageProvider.dart';
 import 'package:reserve/Notifiers/SelectedLanguage.dart';
 import 'package:reserve/Notifiers/SelectedServiceIdProvider.dart';
 import 'package:reserve/Notifiers/UserIdProvider.dart';
-import 'package:reserve/CustomWidgets/CustomDrawer.dart';
 import 'package:reserve/CustomWidgets/MyCustomCalendar.dart';
 import 'package:reserve/app_state.dart';
 import 'package:reserve/flutter_flow/flutter_flow_model.dart';
@@ -39,7 +38,10 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
   late String closingTime;
   late String cardStatus;
   Map<String, dynamic> cardData = {};
-  bool isContainerVisible = false;
+  bool isScheduleVisible = false;
+  bool isPaymentVisible = false;
+  TextEditingController paymentController = TextEditingController();
+
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -60,7 +62,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
   }
 
   Widget buildScheduleContainer(Map<String, dynamic> cardData) {
-    return isContainerVisible
+    return isScheduleVisible
         ? Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -100,7 +102,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
               ),
             ),
             SizedBox(height: 10.0),
-            for (String day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])
+            for (String day in ['Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])
               Column(
                 children: [
                   DaySchedule(
@@ -117,7 +119,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
               ),
             IconButton(
               icon: Icon(
-                isContainerVisible
+                isScheduleVisible
                     ? Icons.keyboard_arrow_up
                     : Icons.keyboard_arrow_down,
                 size: 30.0,
@@ -127,6 +129,104 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
           ],
         ),
 
+      ),
+    )
+        : Container();
+  }
+  Widget buildpaymentContainer() {
+    return isPaymentVisible
+        ? Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+            color: Colors.grey.withOpacity(0.6),
+            width: 1.2,
+          ),
+          borderRadius: BorderRadius.circular(10.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 10,
+              offset: Offset(0, 5), // Adjust the offset if needed
+            ),
+          ],
+        ),
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Add your payment-related UI elements here
+            Text(
+              'Specify the amount of payment:',
+              style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 10.0),
+
+            Padding(
+              padding: const EdgeInsets.fromLTRB(50.0, 5.0, 50.0, 5.0),
+              child: Divider(
+                color: Colors.grey.withOpacity(0.6),
+                thickness: 1.2,
+              ),
+            ),
+            SizedBox(height: 10.0),
+            Container(
+              width: 200.0,
+              child: TextField(
+                controller: paymentController,
+                decoration: InputDecoration(
+                  hintText: 'Enter amount',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(
+                      color: Colors.grey.withOpacity(0.6),
+                    ),
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ),
+            SizedBox(height: 10.0),
+            ElevatedButton(
+              onPressed: () {
+                // Close the keyboard
+                FocusScope.of(context).unfocus();
+
+                // Retrieve the entered amount from the TextField
+                String paymentAmount = paymentController.text;
+
+                // Check if the TextField is not empty
+                if (paymentAmount.isNotEmpty) {
+                  // Add logic to save the payment amount
+                  // Perform your saving logic here
+                } else {
+                  // Display a message or perform any action when the TextField is empty
+                  print('Please enter a valid payment amount.');
+                }
+              },
+              child: Text('Save Payment'),
+            ),
+
+
+            SizedBox(height: 10.0),
+
+            IconButton(
+              icon: Icon(
+                isPaymentVisible
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down,
+                size: 30.0,
+              ),
+              onPressed: togglePaymentContainerVisibility,
+            ),
+          ],
+        ),
       ),
     )
         : Container();
@@ -181,7 +281,13 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
   // Function to toggle the visibility of the schedule container
   void toggleScheduleContainerVisibility() {
     setState(() {
-      isContainerVisible = !isContainerVisible;
+      isScheduleVisible = !isScheduleVisible;
+    });
+  }
+  // Function to toggle the visibility of the schedule container
+  void togglePaymentContainerVisibility() {
+    setState(() {
+      isPaymentVisible = !isPaymentVisible;
     });
   }
 
@@ -337,7 +443,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                   ),
 
                   // Button to toggle the visibility of the schedule container
-                  if (!isContainerVisible)
+                  if (!isScheduleVisible)
                   Container(
                     width: 250,
                     decoration: BoxDecoration(
@@ -365,7 +471,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                         SizedBox(width: 8.0),
                         IconButton(
                           icon: Icon(
-                            isContainerVisible
+                            isScheduleVisible
                                 ? Icons.keyboard_arrow_up
                                 : Icons.keyboard_arrow_down,
                             size: 30.0,
@@ -376,6 +482,46 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                     ),
                   ),
                   buildScheduleContainer(cardData),
+                  SizedBox(height: 20.0,),
+                  if (!isPaymentVisible)
+                    Container(
+                      width: 250,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 3,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Payment Settings',
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 8.0),
+                          IconButton(
+                            icon: Icon(
+                              isPaymentVisible
+                                  ? Icons.keyboard_arrow_up
+                                  : Icons.keyboard_arrow_down,
+                              size: 30.0,
+                            ),
+                            onPressed: togglePaymentContainerVisibility,
+                          ),
+                        ],
+                      ),
+                    ),
+                  buildpaymentContainer(),
                   Container(
                     width: double.infinity,
                     margin: EdgeInsets.all(16.0),
@@ -436,6 +582,69 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
   }
 }
 
+class CustomDropdown extends StatelessWidget {
+  final String value;
+  final Function(String) onChanged;
+  final List<String> items;
+
+  CustomDropdown({
+    required this.value,
+    required this.onChanged,
+    required this.items,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton2<String>(
+      isExpanded: true,
+      value: value,
+      onChanged: (value) {
+        onChanged(value!);
+      },
+      items: items.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(
+            value,
+            style: TextStyle(
+              fontFamily: 'Amiri',
+              fontSize: 18.0,
+            ),
+          ),
+        );
+      }).toList(),
+      buttonStyleData: ButtonStyleData(
+        height: 50.0,
+        width: 100.0,
+        padding: const EdgeInsets.only(left: 3.0, right: 3.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.transparent,
+        ),
+        elevation: 0,
+      ),
+      dropdownStyleData: DropdownStyleData(
+        maxHeight: 200,
+        width: 100.0,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+        ),
+        offset: const Offset(0, 0),
+        scrollbarTheme: ScrollbarThemeData(
+          radius: const Radius.circular(20),
+          thickness: MaterialStateProperty.all<double>(4),
+          thumbVisibility: MaterialStateProperty.all<bool>(true),
+        ),
+      ),
+      menuItemStyleData: const MenuItemStyleData(
+        height: 30,
+        padding: EdgeInsets.only(left: 10, right: 10),
+      ),
+    );
+  }
+}
+
 class DaySchedule extends StatefulWidget {
   final String day;
   final String hours;
@@ -450,15 +659,90 @@ class _DayScheduleState extends State<DaySchedule> {
   String selectedOption = 'Opened';
   String selectedOpeningHour = '9:00 AM';
   String selectedClosingHour = '5:00 PM';
+  String separation = '0.5';
+  // List to store working hours for each day
+  List<Map<String, dynamic>> workingHoursMapList = [];
+
+  // Function to save working hours to the list
+  void saveWorkingHoursToList() {
+    try {
+      // Split the selected hours into components
+      List<String> openingComponents = selectedOpeningHour.split(':');
+      List<String> closingComponents = selectedClosingHour.split(':');
+
+      // Parse hours and minutes
+      int openingHour = int.parse(openingComponents[0]);
+      int openingMinute = int.parse(openingComponents[1].split(' ')[0]); // Remove non-numeric characters
+      String openingPeriod = openingComponents[1].split(' ')[1];
+
+      int closingHour = int.parse(closingComponents[0]);
+      int closingMinute = int.parse(closingComponents[1].split(' ')[0]); // Remove non-numeric characters
+      String closingPeriod = closingComponents[1].split(' ')[1];
+
+      // Adjust hours based on AM or PM
+      if (openingPeriod == 'PM' && openingHour != 12) {
+        openingHour += 12;
+      }
+
+      if (closingPeriod == 'PM' && closingHour != 12) {
+        closingHour += 12;
+      }
+
+      // Calculate total opening and closing minutes
+      int totalOpeningMinutes = openingHour * 60 + openingMinute;
+      int totalClosingMinutes = closingHour * 60 + closingMinute;
+
+      // Calculate working hours based on separation
+      double separationHours = double.parse(separation);
+
+      // Generate the list of separated hours
+      List<String> separatedHoursList = [];
+      for (int i = 0; i <= totalClosingMinutes - totalOpeningMinutes; i += (separationHours * 60).round()) {
+        int currentMinute = totalOpeningMinutes + i;
+        int currentHour = currentMinute ~/ 60;
+        int remainingMinutes = currentMinute % 60;
+
+        // Convert back to 12-hour format with AM or PM
+        String period = currentHour < 12 ? 'AM' : 'PM';
+        currentHour = currentHour % 12;
+        currentHour = currentHour == 0 ? 12 : currentHour;
+
+        separatedHoursList.add('${currentHour.toString().padLeft(2, '0')}:${remainingMinutes.toString().padLeft(2, '0')} $period');
+      }
+
+      // Save working hours data in the map
+      Map<String, dynamic> workingHoursData = {
+        'day': widget.day,
+        'selectedOption': selectedOption,
+        'selectedOpeningHour': selectedOpeningHour,
+        'selectedClosingHour': selectedClosingHour,
+        'separation': separation,
+        'separatedHoursList': separatedHoursList,
+      };
+
+      // Add the map to the list
+      workingHoursMapList.add(workingHoursData);
+
+      // Print the working hours data
+      print('Working Hours Data for ${widget.day}: $workingHoursData');
+    } catch (e, stackTrace) {
+      // Print the exception details for debugging
+      print('Exception during parsing: $e');
+      print('Stack trace: $stackTrace');
+    }
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center, // Center the content horizontally
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.center, // Center the content horizontally
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 widget.day,
@@ -469,60 +753,21 @@ class _DayScheduleState extends State<DaySchedule> {
                 ),
               ),
               SizedBox(width: 8.0),
-              DropdownButton2<String>(
-                isExpanded: true,
+              CustomDropdown(
                 value: selectedOption,
                 onChanged: (value) {
                   setState(() {
-                    selectedOption = value!;
+                    selectedOption = value;
                   });
                 },
-                items: ['Opened', 'Closed'].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value,style: TextStyle(
-                      fontFamily: 'Amiri',
-                      fontSize: 18.0,
-                    ),
-                    ),
-                  );
-                }).toList(),
-                buttonStyleData: ButtonStyleData(
-                  height: 50.0,
-                  width: 100.0,
-                  padding: const EdgeInsets.only(left: 3.0, right: 3.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-
-                    color: Colors.transparent,
-                  ),
-                  elevation: 0,
-                ),
-                dropdownStyleData: DropdownStyleData(
-                  maxHeight: 200,
-                  width: 100.0,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
-                  ),
-                  offset: const Offset(0, 0),
-                  scrollbarTheme: ScrollbarThemeData(
-                    radius: const Radius.circular(20),
-                    thickness: MaterialStateProperty.all<double>(4),
-                    thumbVisibility: MaterialStateProperty.all<bool>(true),
-                  ),
-                ),
-                menuItemStyleData: const MenuItemStyleData(
-                  height: 30,
-                  padding: EdgeInsets.only(left: 10, right: 10),
-                ),
+                items: ['Opened', 'Closed'],
               ),
             ],
           ),
 
           if (selectedOption == 'Opened') ...[
             Row(
-              mainAxisAlignment: MainAxisAlignment.center, // Center the content horizontally
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   'From:',
@@ -533,54 +778,14 @@ class _DayScheduleState extends State<DaySchedule> {
                   ),
                 ),
                 SizedBox(width: 10.0),
-                DropdownButton2<String>(
-                  isExpanded: true,
+                CustomDropdown(
                   value: selectedOpeningHour,
                   onChanged: (value) {
                     setState(() {
-                      selectedOpeningHour = value!;
+                      selectedOpeningHour = value;
                     });
                   },
-                  items: ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value,style: TextStyle(
-                        fontFamily: 'Amiri',
-                        fontSize: 18.0,
-                      ),
-                      ),
-                    );
-                  }).toList(),
-                  buttonStyleData: ButtonStyleData(
-                    height: 50.0,
-                    width: 100.0,
-                    padding: const EdgeInsets.only(left: 3.0, right: 3.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-
-                      color: Colors.transparent,
-                    ),
-                    elevation: 0,
-                  ),
-                  dropdownStyleData: DropdownStyleData(
-                    maxHeight: 200,
-                    width: 100.0,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white,
-                    ),
-                    offset: const Offset(0, 0),
-                    scrollbarTheme: ScrollbarThemeData(
-                      radius: const Radius.circular(20),
-                      thickness: MaterialStateProperty.all<double>(4),
-                      thumbVisibility: MaterialStateProperty.all<bool>(true),
-                    ),
-                  ),
-                  menuItemStyleData: const MenuItemStyleData(
-                    height: 30,
-                    padding: EdgeInsets.only(left: 10, right: 10),
-                  ),
+                  items: ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'],
                 ),
                 SizedBox(width: 20.0),
                 Text(
@@ -592,61 +797,56 @@ class _DayScheduleState extends State<DaySchedule> {
                   ),
                 ),
                 SizedBox(width: 10.0),
-                DropdownButton2<String>(
-                  isExpanded: true,
+                CustomDropdown(
                   value: selectedClosingHour,
                   onChanged: (value) {
                     setState(() {
-                      selectedClosingHour = value!;
+                      selectedClosingHour = value;
                     });
                   },
-                  items: ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value,style: TextStyle(
-                        fontFamily: 'Amiri',
-                        fontSize: 18.0,
-                      ),
-                      ),
-                    );
-                  }).toList(),
-                  buttonStyleData: ButtonStyleData(
-                    height: 50.0,
-                    width: 100.0,
-                    padding: const EdgeInsets.only(left: 3.0, right: 3.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-
-                      color: Colors.transparent,
-                    ),
-                    elevation: 0,
-                  ),
-                  dropdownStyleData: DropdownStyleData(
-                    maxHeight: 200,
-                    width: 100.0,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white,
-                    ),
-                    offset: const Offset(0, 0),
-                    scrollbarTheme: ScrollbarThemeData(
-                      radius: const Radius.circular(20),
-                      thickness: MaterialStateProperty.all<double>(4),
-                      thumbVisibility: MaterialStateProperty.all<bool>(true),
-                    ),
-                  ),
-                  menuItemStyleData: const MenuItemStyleData(
-                    height: 30,
-                    padding: EdgeInsets.only(left: 10, right: 10),
-                  ),
+                  items: ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'],
                 ),
               ],
             )
           ],
+
+          SizedBox(height: 10.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Separation',
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Amiri',
+                ),
+              ),
+              SizedBox(width: 10.0,),
+              CustomDropdown(
+                value: separation,
+                onChanged: (value) {
+                  setState(() {
+                    separation = value;
+                  });
+                },
+                items: ['0.5', '1.0', '1.5', '2', '2.5'],
+              ),
+            ],
+          ),
+
+          SizedBox(height: 10.0),
+          ElevatedButton(
+            onPressed: () {
+              // Call the function to save working hours to the list
+              saveWorkingHoursToList();
+            },
+            child: Text('Save Working Hours'),
+          ),
         ],
       ),
     );
   }
 }
+
 
