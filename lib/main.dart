@@ -182,6 +182,39 @@ class _MyAppState extends State<MyApp> {
   late ConnectivityResult _connectivityResult;
   Locale? _locale;
 
+
+  // Create a method to fetch sid from Firebase Firestore
+  Future<String?> fetchSidFromFirestore() async {
+    try {
+      // Get the currently logged-in user
+      final User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        // Reference to the Firestore collection where you store the user data
+        final CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
+
+        // Fetch the user document based on their UID
+        final DocumentSnapshot userDocument = await usersCollection.doc(user.uid).get();
+
+        // Extract the 'sid' field from the user document
+        final String? sid = userDocument.get('sid');
+        print('sid=$sid');
+
+        return sid;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching sid: $e');
+      return null;
+    }
+  }
+
+  Future<void> saveSidToSharedPreferences(String sid) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('sid', sid);
+  }
+
   setLocale(Locale locale) {
     setState(() {
       _locale = locale;
@@ -228,34 +261,58 @@ class _MyAppState extends State<MyApp> {
       home: Consumer<MyAuthProvider>(
         builder: (context, MyAuthProvider, child) {
           if (MyAuthProvider.isAuthenticated) {
-            return Scaffold(
-              body: PersistentTabView(
-                context,
-                controller: _controller,
-                screens: _buildScreens(),
-                items: _navBarItems(),
-                confineInSafeArea: true,
-                backgroundColor: Colors.white,
-                handleAndroidBackButtonPress: true,
-                resizeToAvoidBottomInset: true,
-                hideNavigationBarWhenKeyboardShows: true,
-                decoration: NavBarDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  colorBehindNavBar: Colors.white,
-                ),
-                popAllScreensOnTapOfSelectedTab: true,
-                popActionScreens: PopActionScreensType.all,
-                itemAnimationProperties: ItemAnimationProperties(
-                  duration: Duration(milliseconds: 200),
-                  curve: Curves.ease,
-                ),
-                screenTransitionAnimation: ScreenTransitionAnimation(
-                  animateTabTransition: true,
-                  curve: Curves.ease,
-                  duration: Duration(milliseconds: 200),
-                ),
-                navBarStyle: NavBarStyle.style8,
-              ),
+            return FutureBuilder<String?>(
+              // Use the pre-loaded Future
+              future: fetchSidFromFirestore(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  // Display a loading screen while fetching sid
+                  return LoadingScreen();
+                } else if (snapshot.hasError) {
+                  // Handle error
+                  return ErrorOccuredWidget(img:'assets/images/error.png',title: selectedLanguage.translate("sorry"),message: [selectedLanguage.translate("errorfirstmsg"),selectedLanguage.translate("errorsecondmsg")]);
+                } else {
+                  // Once sid is fetched, update the provider and shared preferences with the sid
+                  final String? sid = snapshot.data;
+                  if (sid != null) {
+                    // Update the provider
+                    Provider.of<UserIdProvider>(context, listen: false).setUserId(sid);
+
+                    // Update shared preferences
+                    saveSidToSharedPreferences(sid);
+                  }
+
+                  return Scaffold(
+                    body: PersistentTabView(
+                      context,
+                      controller: _controller,
+                      screens: _buildScreens(),
+                      items: _navBarItems(),
+                      confineInSafeArea: true,
+                      backgroundColor: Colors.white,
+                      handleAndroidBackButtonPress: true,
+                      resizeToAvoidBottomInset: true,
+                      hideNavigationBarWhenKeyboardShows: true,
+                      decoration: NavBarDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                        colorBehindNavBar: Colors.white,
+                      ),
+                      popAllScreensOnTapOfSelectedTab: true,
+                      popActionScreens: PopActionScreensType.all,
+                      itemAnimationProperties: ItemAnimationProperties(
+                        duration: Duration(milliseconds: 200),
+                        curve: Curves.ease,
+                      ),
+                      screenTransitionAnimation: ScreenTransitionAnimation(
+                        animateTabTransition: true,
+                        curve: Curves.ease,
+                        duration: Duration(milliseconds: 200),
+                      ),
+                      navBarStyle: NavBarStyle.style8,
+                    ),
+                  );
+                }
+              },
             );
           } else {
             return FutureBuilder(
@@ -282,6 +339,7 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+
 
 
 
