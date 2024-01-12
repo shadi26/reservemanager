@@ -11,6 +11,7 @@ import 'package:reserve/CustomWidgets/MyCustomCalendar.dart';
 import 'package:reserve/app_state.dart';
 import 'package:reserve/flutter_flow/flutter_flow_model.dart';
 import 'package:reserve/pages/ReservationCheckout/ReservationCheckout.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'reservation_page1_model.dart';
 
 class ReservationPage1Widget extends StatefulWidget {
@@ -403,6 +404,37 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
     )
         : Container();
   }
+
+
+  void updatePriceInFirestore(String newPrice) async {
+    try {
+      // Retrieve the 'sid' from shared preferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String sid = prefs.getString('sid') ?? ''; // Provide a default value if 'sid' is not found
+
+      // Reference to the Firestore document using 'sid'
+      var documentRef = FirebaseFirestore.instance.collection('servicesInACity').doc(sid);
+
+      // Update the 'price' field in the document
+      await documentRef.update({'price': newPrice});
+
+      // Show a success message using a Snackbar with a green background
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Price updated successfully'),
+          duration: Duration(seconds: 2), // Optional: You can customize the duration
+          backgroundColor: Colors.green, // Set the background color to green
+        ),
+      );
+
+      // Show a success message or perform any other actions if needed
+      print('Price updated successfully');
+    } catch (error) {
+      // Handle any errors that occur during the update process
+      print('Error updating price: $error');
+    }
+  }
+
   Widget buildpaymentContainer() {
     return isPaymentVisible
         ? Padding(
@@ -475,6 +507,8 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                 if (paymentAmount.isNotEmpty) {
                   // Add logic to save the payment amount
                   // Perform your saving logic here
+                  // Call a function to update the price in Firestore
+                  updatePriceInFirestore(paymentAmount);
                 } else {
                   // Display a message or perform any action when the TextField is empty
                   print('Please enter a valid payment amount.');

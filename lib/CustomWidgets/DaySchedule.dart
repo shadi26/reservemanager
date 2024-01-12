@@ -19,6 +19,15 @@ class _DayScheduleState extends State<DaySchedule> {
   // List to store working hours for each day
   List<Map<String, dynamic>> workingHoursMapList = [];
 
+  @override
+  void initState() {
+    super.initState();
+    print('hours=${widget.hours}');
+    print('day=${widget.day}');
+
+
+  }
+
   // Function to save working hours to the list
   void saveWorkingHoursToList() {
     try {
