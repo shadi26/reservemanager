@@ -43,13 +43,13 @@ class _MyCustomCalendarState extends State<MyCustomCalendar> {
         onDaySelected: (selectedDay, focusedDay) {
           setState(() {
             _selectedDay = selectedDay;
-            _focusedDay = DateTime.now();
           });
 
           widget.onDateSelected(selectedDay);
         },
         onPageChanged: (focusedDay) {
           if (focusedDay != null) {
+            // Update focusedDay only when changing the page
             setState(() {
               _focusedDay = focusedDay;
             });
