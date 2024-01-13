@@ -4,8 +4,10 @@ import 'package:reserve/CustomWidgets/CustomDropdown.dart';
 class DaySchedule extends StatefulWidget {
   final String day;
   final String hours;
+  final String openningHour;
+  final String closingHour;
 
-  DaySchedule({required this.day, required this.hours});
+  DaySchedule({required this.day, required this.hours,required this.openningHour,required this.closingHour});
 
   @override
   _DayScheduleState createState() => _DayScheduleState();
@@ -22,8 +24,11 @@ class _DayScheduleState extends State<DaySchedule> {
   @override
   void initState() {
     super.initState();
-    print('hours=${widget.hours}');
-    print('day=${widget.day}');
+    selectedOpeningHour = widget.openningHour;
+    selectedClosingHour = widget.closingHour;
+    selectedOption = widget.openningHour == 'Closed' ? 'Closed' : 'Opened';
+    print('selectedOpeningHour=$selectedOpeningHour');
+    print('selectedClosingHour=$selectedClosingHour');
 
 
   }
@@ -132,7 +137,6 @@ class _DayScheduleState extends State<DaySchedule> {
 
           if (selectedOption == 'Opened') ...[
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   'From:',
@@ -143,14 +147,16 @@ class _DayScheduleState extends State<DaySchedule> {
                   ),
                 ),
                 SizedBox(width: 10.0),
-                CustomDropdown(
-                  value: selectedOpeningHour,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedOpeningHour = value;
-                    });
-                  },
-                  items: ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'],
+                Expanded(
+                  child: CustomDropdown(
+                    value: selectedOpeningHour,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedOpeningHour = value;
+                      });
+                    },
+                    items: [selectedOpeningHour, '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'],
+                  ),
                 ),
                 SizedBox(width: 20.0),
                 Text(
@@ -162,14 +168,16 @@ class _DayScheduleState extends State<DaySchedule> {
                   ),
                 ),
                 SizedBox(width: 10.0),
-                CustomDropdown(
-                  value: selectedClosingHour,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedClosingHour = value;
-                    });
-                  },
-                  items: ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'],
+                Expanded(
+                  child: CustomDropdown(
+                    value: selectedClosingHour,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedClosingHour = value;
+                      });
+                    },
+                    items: [selectedClosingHour,'9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'],
+                  ),
                 ),
               ],
             )

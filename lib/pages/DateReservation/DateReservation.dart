@@ -381,6 +381,8 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                     hours: cardData['weeklyStadiumOpeningSchedule'][day] != null
                         ? cardData['weeklyStadiumOpeningSchedule'][day][0]
                         : 'N/A',
+                    openningHour: cardData['weeklyStadiumOpeningSchedule'][day][0],
+                    closingHour: cardData['weeklyStadiumOpeningSchedule'][day][0] == 'Closed' ? 'Closed' : cardData['weeklyStadiumOpeningSchedule'][day][1],
                   ),
                   Divider(
                     color: Colors.grey.withOpacity(0.6),
