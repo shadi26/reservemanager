@@ -627,6 +627,7 @@ class _CustomResCardState extends State<CustomResCardWidget> {
               if (widget.reservationType == 'current')
                 Column(
                   children: [
+                    if(widget.reservationResult == 'pending' )
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                       child: Container(
@@ -701,7 +702,8 @@ class _CustomResCardState extends State<CustomResCardWidget> {
                     ),
                     // Improved design for the timeBooked text
 
-                    Padding(
+                    if(widget.reservationResult == 'pending' || widget.reservationResult == 'Accepted' )
+                      Padding(
                       padding:
                           const EdgeInsets.fromLTRB(50.0, 10.0, 50.0, 10.0),
                       child: CountdownTimer(

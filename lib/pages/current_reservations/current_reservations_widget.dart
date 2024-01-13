@@ -91,7 +91,6 @@ class CurrentReservationsWidget extends StatefulWidget {
 
 class _CurrentReservationsWidgetState extends State<CurrentReservationsWidget>
     with TickerProviderStateMixin {
-  late TabController _tabController; // Initialize TabController here
   final unfocusNode = FocusNode();
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<Map<String, dynamic>> data = [];
@@ -127,28 +126,10 @@ class _CurrentReservationsWidgetState extends State<CurrentReservationsWidget>
   @override
   void initState() {
     super.initState();
-
-    // Initialize TabController
-    _tabController = TabController(
-      vsync: this,
-      length: 2,
-      initialIndex: 0,
-    );
-
-    // Add a listener to the TabController
-    _tabController.addListener(() {
-      // Trigger actions when the tab changes
-      _tabController.animateTo(_tabController.index);
-      //rebuildTabView();
-    });
   }
-
-
 
   @override
   void dispose() {
-    // Dispose of the TabController
-    _tabController.dispose();
     super.dispose();
   }
 
@@ -188,9 +169,6 @@ class _CurrentReservationsWidgetState extends State<CurrentReservationsWidget>
     }
   }
 
-
-
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -215,7 +193,7 @@ class _CurrentReservationsWidgetState extends State<CurrentReservationsWidget>
 
   @override
   Widget build(BuildContext context) {
-    // Notifier to rebuild the page when new reservation is done
+    // Notifier to rebuild the page when a new reservation is done
     final reservationNotifier =
     Provider.of<ReservationDoneNotifier>(context);
     // Get the selected language from the provider
@@ -276,51 +254,15 @@ class _CurrentReservationsWidgetState extends State<CurrentReservationsWidget>
             mainAxisSize: MainAxisSize.max,
             children: [
               Expanded(
-                child: Column(
-                  children: [
-                    Align(
-                      alignment: Alignment(0.0, 0),
-                      child: TabBar(
-                        labelColor: Colors.black,
-                        unselectedLabelColor: Colors.grey,
-                        labelStyle: TextStyle(
-                          fontFamily: 'Amiri',
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                        unselectedLabelStyle: TextStyle(
-                          fontFamily: 'Amiri',
-                        ),
-                        indicatorColor: Color(0xFFD54D57),
-                        padding:
-                        EdgeInsetsDirectional.fromSTEB(4.0, 4.0, 4.0, 4.0),
-                        tabs: [
-                          Tab(
-                            text: selectedLanguage
-                                .translate('currentreservation'),
-                          ),
-                          Tab(
-                            text: selectedLanguage
-                                .translate('previousreservation'),
-                          ),
-                        ],
-                        controller: _tabController,
-                      ),
-                    ),
-                    Expanded(
-                      child: _isDataLoaded
-                          ? _TreeBuild(context)
-                          : ListView.builder(
-                        itemCount: 2, // Set the number of shimmer items
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (BuildContext context, int index) {
-                          return ShimmerLoading.CurrentReservationShimmer(
-                              context);
-                        },
-                      ),
-                    ),
-                  ],
+                child: _isDataLoaded
+                    ? _TreeBuild(context)
+                    : ListView.builder(
+                  itemCount: 2, // Set the number of shimmer items
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (BuildContext context, int index) {
+                    return ShimmerLoading.CurrentReservationShimmer(
+                        context);
+                  },
                 ),
               ),
             ],
@@ -331,84 +273,48 @@ class _CurrentReservationsWidgetState extends State<CurrentReservationsWidget>
   }
 
   Widget _TreeBuild(BuildContext context) {
-    return TabBarView(
-      controller: _tabController,
-      children: [
-        SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: data
-                .where((reservation) =>
-            reservation['reservationType'] == 'current')
-                .map((reservation) {
-              DateTime parsedDateTime = DateFormat('dd-MM-yyyy HH:mm')
-                  .parse(reservation['timeBooked']);
-              String formattedDateString =
-              DateFormat('d-M-yyyy HH:mm').format(parsedDateTime);
+    // Sort the data list based on the 'timeBooked'
+    data.sort((a, b) => a['timeBooked'].compareTo(b['timeBooked']));
 
-              return Padding(
-                padding: const EdgeInsets.only(
-                  top: 10.0,
-                  bottom: 10.0,
-                  left: 15.0,
-                  right: 15.0,
-                ),
-                child: CustomResCard(
-                  rid: reservation['rid'],
-                  reservationTime: reservation['reservationTime'],
-                  reservationNumber: reservation['reservationNumber'],
-                  venueName: reservation['venueName'],
-                  paymentType: reservation['paymentType'],
-                  imageUrl: 'https://cdn-icons-png.flaticon.com/128/9187/9187475.png',
-                  reservationType: reservation['reservationType'],
-                  reservationResult: reservation['reservationResult'],
-                  totalAmount: reservation['totalAmount'],
-                  timeRmainingInSeconds: reservation['reservationTimeRemaining'],
-                  countdownDuration: reservation['reservationDuration'],
-                  timeBooked: reservation['timeBooked'],
-                  reservationTimeStamp: reservation['reservationTimeStamp'],
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-        SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: data
-                .where((reservation) => reservation['reservationType'] == 'old')
-                .map((reservation) {
-              DateTime parsedDateTime = DateFormat('dd-MM-yyyy HH:mm')
-                  .parse(reservation['timeBooked']);
-              String formattedDateString =
-              DateFormat('d-M-yyyy HH:mm').format(parsedDateTime);
-              return Padding(
-                padding: const EdgeInsets.only(
-                  top: 10.0,
-                  bottom: 10.0,
-                  left: 15.0,
-                  right: 15.0,
-                ),
-                child: CustomResCard(
-                  rid: reservation['rid'],
-                  reservationTime: reservation['reservationTime'],
-                  reservationNumber: reservation['reservationNumber'],
-                  venueName: reservation['venueName'],
-                  paymentType: reservation['paymentType'],
-                  imageUrl: 'https://cdn-icons-png.flaticon.com/128/9187/9187475.png',
-                  reservationType: reservation['reservationType'],
-                  reservationResult: reservation['reservationResult'],
-                  totalAmount: reservation['totalAmount'],
-                  timeRmainingInSeconds: 70,
-                  countdownDuration: reservation['reservationDuration'],
-                  timeBooked: reservation['timeBooked'],
-                  reservationTimeStamp: reservation['reservationTimeStamp'],
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: data
+            .where((reservation) => reservation['reservationType'] == 'current' && reservation['reservationResult'] == 'pending')
+            .map((reservation) {
+          DateTime parsedDateTime = DateFormat('dd-MM-yyyy HH:mm')
+              .parse(reservation['timeBooked']);
+          String formattedDateString =
+          DateFormat('d-M-yyyy HH:mm').format(parsedDateTime);
+
+          return Padding(
+            padding: const EdgeInsets.only(
+              top: 10.0,
+              bottom: 10.0,
+              left: 15.0,
+              right: 15.0,
+            ),
+            child: CustomResCard(
+              rid: reservation['rid'],
+              reservationTime: reservation['reservationTime'],
+              reservationNumber: reservation['reservationNumber'],
+              venueName: reservation['venueName'],
+              paymentType: reservation['paymentType'],
+              imageUrl:
+              'https://cdn-icons-png.flaticon.com/128/9187/9187475.png',
+              reservationType: reservation['reservationType'],
+              reservationResult: reservation['reservationResult'],
+              totalAmount: reservation['totalAmount'],
+              timeRmainingInSeconds: reservation['reservationTimeRemaining'],
+              countdownDuration: reservation['reservationDuration'],
+              timeBooked: reservation['timeBooked'],
+              reservationTimeStamp: reservation['reservationTimeStamp'],
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
+
+
 }

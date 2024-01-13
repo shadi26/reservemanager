@@ -30,6 +30,7 @@ import 'dart:ui';
 import 'package:get/get.dart';
 import 'dependency_injection.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'pages/ReservationSchedule/ReservationSchedule.dart';
 import 'uistates/ErrorWidgets.dart';
 import 'uistates/LoadingScreenWidget.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -340,13 +341,6 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-
-
-
-
-
-
-
   // Replace this function with your actual data-loading function
   Future<void> loadData() async {
     // Simulate loading data
@@ -386,8 +380,8 @@ class _MyAppState extends State<MyApp> {
 
 
       PersistentBottomNavBarItem(
-        icon: Icon(Icons.person_2_outlined), // Use either Icons.person or Icons.account_circle
-        title: selectedLanguage.translate("profile"),
+        icon: Icon(Icons.schedule), // Use either Icons.person or Icons.account_circle
+        title: selectedLanguage.translate("schedule"),
         inactiveColorPrimary: Colors.black,
         activeColorPrimary: Color(0xFFD54D57),
       ),
@@ -398,7 +392,8 @@ class _MyAppState extends State<MyApp> {
     return [
       ReservationPage1Widget(),
       CurrentReservationsWidget(),
-      ProfilePage()
+
+      ReservationSchedule()
     ];
     //... Your existing _buildScreens code ...
   }
