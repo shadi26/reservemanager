@@ -100,29 +100,8 @@ class _CurrentReservationsWidgetState extends State<CurrentReservationsWidget>
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<Map<String, dynamic>> data = [];
   bool _isDataLoaded = false;
+  late List<Map<String, dynamic>> documents;
 
-  Future<List<Map<String, dynamic>>> fetchReservations(String sid) async {
-    try {
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-      CollectionReference<Map<String, dynamic>> collection =
-      firestore.collection("Reservations");
-
-      // Fetch documents with 'sid' equal to the provided sid
-      QuerySnapshot<Map<String, dynamic>> querySnapshot =
-      await collection.where('sid', isEqualTo: sid).get();
-
-      // Extract the list of documents
-      List<Map<String, dynamic>> reservations = querySnapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
-          .toList();
-
-      return reservations;
-    } catch (e) {
-      // Handle errors if necessary
-      print('Error fetching reservations: $e');
-      return [];
-    }
-  }
 
   Future<String?> getUserId(BuildContext context) async {
     return Provider.of<UserIdProvider>(context).userId;
@@ -131,12 +110,16 @@ class _CurrentReservationsWidgetState extends State<CurrentReservationsWidget>
   @override
   void initState() {
     super.initState();
+    FirebaseFirestore.instance.collection('Reservations').snapshots().listen((snapshot) {
+      // Logic to handle the new data
+      setState(() {
+        print('new reservation arrived');
+        // Update your reservation data here
+        documents = snapshot.docs.map((doc) => doc.data()).toList();
+      });
+    });
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   Future<void> fetchDataAndMapToLocal(String sid) async {
     try {
@@ -152,7 +135,7 @@ class _CurrentReservationsWidgetState extends State<CurrentReservationsWidget>
       print('i did get the data from firebase');
 
       // Extract the list of 'sid' values and document IDs from the documents
-      List<Map<String, dynamic>> documents = querySnapshot.docs.map((doc) {
+      documents = querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data();
         data['documentId'] = doc.id;
         return data;
