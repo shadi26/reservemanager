@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:reserve/CustomWidgets/CustomDropdown.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DaySchedule extends StatefulWidget {
   final String day;
@@ -7,19 +9,47 @@ class DaySchedule extends StatefulWidget {
   final String openningHour;
   final String closingHour;
 
-  DaySchedule({required this.day, required this.hours,required this.openningHour,required this.closingHour});
+  DaySchedule(
+      {required this.day,
+      required this.hours,
+      required this.openningHour,
+      required this.closingHour});
 
   @override
   _DayScheduleState createState() => _DayScheduleState();
 }
 
 class _DayScheduleState extends State<DaySchedule> {
-  String selectedOption = 'Opened';
-  String selectedOpeningHour = '9:00 AM';
-  String selectedClosingHour = '5:00 PM';
+  late List<String> timeOptions;
+  late String selectedOption ;
+  late String selectedOpeningHour ;
+  late String selectedClosingHour ;
   String separation = '0.5';
+
   // List to store working hours for each day
   List<Map<String, dynamic>> workingHoursMapList = [];
+
+  void updateStadiumOpeningHours() async {
+    final prefs = await SharedPreferences.getInstance();
+    String sid = prefs.getString('sid') ?? '';
+
+    if (sid.isNotEmpty) {
+      // Assume openingHour is the value you want to update
+
+      List<String> openingClosingHours = [selectedOpeningHour, selectedClosingHour];
+
+      FirebaseFirestore.instance
+          .collection('servicesInACity')
+          .doc(sid)
+          .update({
+            'weeklyStadiumOpeningSchedule.${widget.day}': openingClosingHours
+          })
+          .then((_) => print("Schedule updated successfully"))
+          .catchError((error) => print("Failed to update schedule: $error"));
+    } else {
+      print("No SID found in Shared Preferences");
+    }
+  }
 
   @override
   void initState() {
@@ -30,7 +60,12 @@ class _DayScheduleState extends State<DaySchedule> {
     print('selectedOpeningHour=$selectedOpeningHour');
     print('selectedClosingHour=$selectedClosingHour');
 
-
+    // Initialize time options with half hour difference between them
+    timeOptions = [
+      for (int h = 0; h < 24; h++)
+        for (int m = 0; m < 60; m += 30)
+          '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}'
+    ];
   }
 
   // Function to save working hours to the list
@@ -42,11 +77,13 @@ class _DayScheduleState extends State<DaySchedule> {
 
       // Parse hours and minutes
       int openingHour = int.parse(openingComponents[0]);
-      int openingMinute = int.parse(openingComponents[1].split(' ')[0]); // Remove non-numeric characters
+      int openingMinute = int.parse(
+          openingComponents[1].split(' ')[0]); // Remove non-numeric characters
       String openingPeriod = openingComponents[1].split(' ')[1];
 
       int closingHour = int.parse(closingComponents[0]);
-      int closingMinute = int.parse(closingComponents[1].split(' ')[0]); // Remove non-numeric characters
+      int closingMinute = int.parse(
+          closingComponents[1].split(' ')[0]); // Remove non-numeric characters
       String closingPeriod = closingComponents[1].split(' ')[1];
 
       // Adjust hours based on AM or PM
@@ -67,7 +104,9 @@ class _DayScheduleState extends State<DaySchedule> {
 
       // Generate the list of separated hours
       List<String> separatedHoursList = [];
-      for (int i = 0; i <= totalClosingMinutes - totalOpeningMinutes; i += (separationHours * 60).round()) {
+      for (int i = 0;
+          i <= totalClosingMinutes - totalOpeningMinutes;
+          i += (separationHours * 60).round()) {
         int currentMinute = totalOpeningMinutes + i;
         int currentHour = currentMinute ~/ 60;
         int remainingMinutes = currentMinute % 60;
@@ -77,7 +116,8 @@ class _DayScheduleState extends State<DaySchedule> {
         currentHour = currentHour % 12;
         currentHour = currentHour == 0 ? 12 : currentHour;
 
-        separatedHoursList.add('${currentHour.toString().padLeft(2, '0')}:${remainingMinutes.toString().padLeft(2, '0')} $period');
+        separatedHoursList.add(
+            '${currentHour.toString().padLeft(2, '0')}:${remainingMinutes.toString().padLeft(2, '0')} $period');
       }
 
       // Save working hours data in the map
@@ -101,9 +141,6 @@ class _DayScheduleState extends State<DaySchedule> {
       print('Stack trace: $stackTrace');
     }
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +171,6 @@ class _DayScheduleState extends State<DaySchedule> {
               ),
             ],
           ),
-
           if (selectedOption == 'Opened') ...[
             Row(
               children: [
@@ -149,14 +185,14 @@ class _DayScheduleState extends State<DaySchedule> {
                 SizedBox(width: 10.0),
                 Expanded(
                   child: CustomDropdown(
-                    value: selectedOpeningHour,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedOpeningHour = value;
-                      });
-                    },
-                    items: [selectedOpeningHour, '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'],
-                  ),
+                      value: selectedOpeningHour,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedOpeningHour = value;
+                          print('selectedOpeningHours=$selectedOpeningHour');
+                        });
+                      },
+                      items: timeOptions),
                 ),
                 SizedBox(width: 20.0),
                 Text(
@@ -170,51 +206,26 @@ class _DayScheduleState extends State<DaySchedule> {
                 SizedBox(width: 10.0),
                 Expanded(
                   child: CustomDropdown(
-                    value: selectedClosingHour,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedClosingHour = value;
-                      });
-                    },
-                    items: [selectedClosingHour,'9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'],
-                  ),
+                      value: selectedClosingHour,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedClosingHour = value;
+                        });
+                      },
+                      items: timeOptions),
                 ),
               ],
             )
           ],
-
-          SizedBox(height: 10.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Separation',
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Amiri',
-                ),
-              ),
-              SizedBox(width: 10.0,),
-              CustomDropdown(
-                value: separation,
-                onChanged: (value) {
-                  setState(() {
-                    separation = value;
-                  });
-                },
-                items: ['0.5', '1.0', '1.5', '2', '2.5'],
-              ),
-            ],
-          ),
-
           SizedBox(height: 10.0),
           ElevatedButton(
             onPressed: () {
               // Call the function to save working hours to the list
               saveWorkingHoursToList();
+              updateStadiumOpeningHours();
             },
-            child: Text('Save',
+            child: Text(
+              'Save',
               style: TextStyle(
                 color: Colors.white,
                 fontFamily: 'Amiri',

@@ -369,7 +369,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
               ),
             ),
             SizedBox(height: 10.0),
-            for (String day in ['Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])
+            for (String day in ['Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'])
               Column(
                 children: [
                   DaySchedule(
