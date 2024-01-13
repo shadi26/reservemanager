@@ -362,7 +362,9 @@ class _ReservationScheduleState extends State<ReservationSchedule>
                 return Container();
               }).toList(),
             ),
+
           ),
+          SizedBox(height: 20.0,),
         ],
       ),
     );

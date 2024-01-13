@@ -53,24 +53,15 @@ class _TimerWithLinearProgressState extends State<TimerWithLinearProgress>
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 205.0,
+      width: 250.0,
       decoration: BoxDecoration(
         color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 0,
-            blurRadius: 0,
-            offset: Offset(0, 3),
-          ),
-        ],
+
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(10.0),
         child: SizedBox(
           width: widget.size, // Use the size property
-          height: 15.0, // Use a fixed height for linear progress
+          height: 3.0, // Use a fixed height for linear progress
           child: AnimatedBuilder(
             animation: _controller,
             builder: (context, child) {

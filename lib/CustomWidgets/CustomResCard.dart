@@ -280,7 +280,40 @@ class _CustomResCardState extends State<CustomResCardWidget> {
       print('Error deleting reservation: $error');
     }
   }
-
+  Widget buildInfoContainer(String labelText, String text, String direction) {
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: Container(
+        width: 250,
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          border: Border(
+            bottom: BorderSide(
+              color: Colors.grey, // Choose the color you want for the bottom border
+              width: 2.0, // Choose the width you want for the bottom border
+            ),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(5.0, 5.0, 8.0, 5.0),
+          child: Directionality(
+            textDirection: direction == 'English'
+                ? TextDirection.ltr
+                : TextDirection.rtl,
+            child: Text(
+              '$labelText: $text',
+              style: TextStyle(
+                color: Colors.black,
+                fontFamily: 'Amiri',
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -309,318 +342,148 @@ class _CustomResCardState extends State<CustomResCardWidget> {
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(8.0),
-                    topRight: Radius.circular(8.0),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 30.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8.0),
+                      topRight: Radius.circular(8.0),
+                    ),
+                    color: Color(0xFFD54D57),
                   ),
-                  color: Color(0xFFD54D57),
-                ),
-
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10.0, top: 5.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Text(
-                          selectedLanguage.translate('reservationnumber') +
-                              ': ${widget.reservationNumber}',
-                          style: TextStyle(
-                            fontFamily: 'Amiri',
-                            color: Colors.white,
-                            fontSize: 17,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10.0, top: 5.0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              selectedLanguage.translate('reservationnumber') +
+                                  ': ${widget.reservationNumber}',
+                              style: TextStyle(
+                                fontFamily: 'Amiri',
+                                color: Colors.white,
+                                fontSize: 15,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
 
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10.0, top: 5.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Text(
-                          widget.reservationTime,
-                          style: TextStyle(
-                            fontFamily: 'Amiri',
-                            color: Colors.white,
-                            fontSize: 17,
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0, top: 5.0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              widget.reservationTime,
+                              style: TextStyle(
+                                fontFamily: 'Amiri',
+                                color: Colors.white,
+                                fontSize: 15,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Container(
-                          width: 220,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(10.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.3),
-                                spreadRadius: 0,
-                                blurRadius: 0,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(5.0, 5.0, 8.0, 5.0),
-                            child: Directionality(
-                              textDirection:
-                                  selectedLanguage.selectedLanguage == 'English'
-                                      ? TextDirection.ltr
-                                      : TextDirection.rtl,
-                              child: Text(
-                                selectedLanguage
-                                        .translate('reservationservicename') +
-                                    ': ${selectedLanguage.translate(widget.venueName.toLowerCase())}',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'Amiri',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Container(
-                          width: 220,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(10.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.3),
-                                spreadRadius: 0,
-                                blurRadius: 0,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(5.0, 5.0, 8.0, 5.0),
-                            child: Directionality(
-                              textDirection:
-                                  selectedLanguage.selectedLanguage == 'English'
-                                      ? TextDirection.ltr
-                                      : TextDirection.rtl,
-                              child: Text(
-                                selectedLanguage
-                                        .translate('reservationpayment') +
-                                    ': ${selectedLanguage.translate('${widget.paymentType.toLowerCase()}method')}',
-                                style: TextStyle(
-                                  fontFamily: 'Amiri',
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Container(
-                          width: 220,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(10.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.3),
-                                spreadRadius: 0,
-                                blurRadius: 0,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding:
-                            const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                            child: Directionality(
-                              textDirection:
-                              selectedLanguage.selectedLanguage == 'English'
-                                  ? TextDirection.ltr
-                                  : TextDirection.rtl,
-                              child: Text(
-                                selectedLanguage.translate('booked') +
-                                    ': ${widget.timeBooked}',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'Amiri',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Container(
-                          width: 220,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(10.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.3),
-                                spreadRadius: 0,
-                                blurRadius: 0,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding:
-                            const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                            child: Directionality(
-                              textDirection:
-                              selectedLanguage.selectedLanguage == 'English'
-                                  ? TextDirection.ltr
-                                  : TextDirection.rtl,
-                              child: Text(
-                                selectedLanguage.translate('rescardamount') +
-                                    ': ${widget.totalAmount}',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'Amiri',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Container(
-                          width: 220,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(10.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.3),
-                                spreadRadius: 0,
-                                blurRadius: 0,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Stack(
-                            children: [
-                              widget.reservationType == 'current'
-                                  ? Positioned.fill(
-                                child: TimerWithLinearProgress(
-                                  remainingTimeInSeconds: 1800,
-                                  startingSecond: LinearProgressStartTime,
-                                  size: 40.0,
-                                  timerDuration: 5,
-                                  onTimerFinished: () {
-                                    setState(() {
-                                      // Update the text or take any action
-                                      resResult = 'Cancelled';
-                                    });
-                                  },
-                                ),
-                              )
-                                  : SizedBox(width: 0,),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(5.0, 5.0, 8.0, 5.0),
-                                child: Directionality(
-                                  textDirection: selectedLanguage.selectedLanguage == 'English'
-                                      ? TextDirection.ltr
-                                      : TextDirection.rtl,
-                                  child: Text(
-                                    selectedLanguage.translate('reservatiostatus') +
-                                        ': ${selectedLanguage.translate(resResult)}',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontFamily: 'Amiri',
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-
-
-                    ],
+                  buildInfoContainer(
+                    selectedLanguage.translate('reservationservicename'),
+                    selectedLanguage.translate(widget.venueName.toLowerCase()),
+                    selectedLanguage.selectedLanguage,
                   ),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 10.0),
-                      child: Container(
-                        width: 140.0,
-                        height: 140.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.3),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: Offset(0, 3),
+                  buildInfoContainer(
+                    selectedLanguage.translate('phone'),
+                    '', // Add the actual phone number here
+                    selectedLanguage.selectedLanguage,
+                  ),
+                  buildInfoContainer(
+                    selectedLanguage.translate('reservationpayment'),
+                    selectedLanguage.translate('${widget.paymentType.toLowerCase()}method'),
+                    selectedLanguage.selectedLanguage,
+                  ),
+                  buildInfoContainer(
+                    selectedLanguage.translate('date'),
+                    widget.timeBooked,
+                    selectedLanguage.selectedLanguage,
+                  ),
+                  buildInfoContainer(
+                    selectedLanguage.translate('time'),
+                    '',
+                    selectedLanguage.selectedLanguage,
+                  ),
+                  buildInfoContainer(
+                    selectedLanguage.translate('rescardamount'),
+                    widget.totalAmount,
+                    selectedLanguage.selectedLanguage,
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 30.0),
+                    child: Container(
+                      width: 250,
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Colors.grey, // Choose the color you want for the bottom border
+                            width: 2.0, // Choose the width you want for the bottom border
+                          ),
+                        ),
+                      ),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            bottom: 0, // Align to the bottom
+                            left: 0,   // Align to the left
+                            right: 0,  // Align to the right
+                            child: widget.reservationType == 'current'
+                                ? TimerWithLinearProgress(
+                              remainingTimeInSeconds: 1800,
+                              startingSecond: LinearProgressStartTime,
+                              size: 40.0,
+                              timerDuration: 5,
+                              onTimerFinished: () {
+                                setState(() {
+                                  // Update the text or take any action
+                                  resResult = 'Rejected';
+                                });
+                              },
+                            )
+                                : SizedBox(width: 0),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(5.0, 5.0, 8.0, 5.0),
+                            child: Directionality(
+                              textDirection: selectedLanguage.selectedLanguage == 'English'
+                                  ? TextDirection.ltr
+                                  : TextDirection.rtl,
+                              child: Text(
+                                selectedLanguage.translate('reservatiostatus') +
+                                    ': ${selectedLanguage.translate(resResult)}',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'Amiri',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                          ],
-                          border: Border.all(
-                            color: Colors.transparent,
-                            // Set border color to transparent
-                            width: 3.0,
                           ),
-                          gradient: LinearGradient(
-                            colors: [Color(0xFFD54D57), Colors.white],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                        ),
-                        child: ClipOval(
-                          child: Image.network(
-                            widget.imageUrl,
-                            // Assuming uint8List is your Uint8List variable
-                            width: 140.0,
-                            height: 140.0,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                        ],
                       ),
                     ),
                   ),
+
                 ],
               ),
               //
@@ -633,6 +496,7 @@ class _CustomResCardState extends State<CustomResCardWidget> {
                       child: Container(
                         alignment: AlignmentDirectional.bottomEnd,
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ElevatedButton(
                               onPressed: () {
@@ -705,7 +569,7 @@ class _CustomResCardState extends State<CustomResCardWidget> {
                     if(widget.reservationResult == 'pending' || widget.reservationResult == 'Accepted' )
                       Padding(
                       padding:
-                          const EdgeInsets.fromLTRB(50.0, 10.0, 50.0, 10.0),
+                          const EdgeInsets.fromLTRB(50.0, 10.0, 50.0, 30.0),
                       child: CountdownTimer(
                         startTime: timeDifference,
                       ),
