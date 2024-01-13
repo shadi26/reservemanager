@@ -16,6 +16,7 @@ import '../../CustomWidgets/CustomResCard.dart';
 import '../../Notifiers/SelectedLanguage.dart';
 
 Map<String, dynamic> mapFirebaseDataToLocal(Map<String, dynamic> firebaseData) {
+  print('afs3');
   print('im at mapfirebasedatatolocal');
   print('firebaseData=$firebaseData');
   /************************************************************* calculating the 30 minutes difference *************************************************/
@@ -100,7 +101,6 @@ class _CurrentReservationsWidgetState extends State<CurrentReservationsWidget>
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<Map<String, dynamic>> data = [];
   bool _isDataLoaded = false;
-  late List<Map<String, dynamic>> documents;
 
 
   Future<String?> getUserId(BuildContext context) async {
@@ -114,8 +114,7 @@ class _CurrentReservationsWidgetState extends State<CurrentReservationsWidget>
       // Logic to handle the new data
       setState(() {
         print('new reservation arrived');
-        // Update your reservation data here
-        documents = snapshot.docs.map((doc) => doc.data()).toList();
+        Provider.of<ReservationDoneNotifier>(context,listen: false).notifyListeners();
       });
     });
   }
@@ -135,7 +134,7 @@ class _CurrentReservationsWidgetState extends State<CurrentReservationsWidget>
       print('i did get the data from firebase');
 
       // Extract the list of 'sid' values and document IDs from the documents
-      documents = querySnapshot.docs.map((doc) {
+      List<Map<String, dynamic>> documents = querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data();
         data['documentId'] = doc.id;
         return data;
@@ -182,8 +181,8 @@ class _CurrentReservationsWidgetState extends State<CurrentReservationsWidget>
   @override
   Widget build(BuildContext context) {
     // Notifier to rebuild the page when a new reservation is done
-    final reservationNotifier =
-    Provider.of<ReservationDoneNotifier>(context);
+    context.watch<ReservationDoneNotifier>();
+
 
     final reservationStatusChanged = Provider.of<ReservationStatusChangedNotifier>(context);
     // Get the selected language from the provider
