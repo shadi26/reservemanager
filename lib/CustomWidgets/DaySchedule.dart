@@ -214,7 +214,16 @@ class _DayScheduleState extends State<DaySchedule> {
               // Call the function to save working hours to the list
               saveWorkingHoursToList();
             },
-            child: Text('Save Working Hours'),
+            child: Text('Save',
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Amiri',
+                fontSize: 18.0,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFFD54D57),
+            ),
           ),
         ],
       ),
