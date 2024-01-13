@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../CustomWidgets/CustomDrawer.dart';
 import '../../Notifiers/AuthProvider.dart';
 import '../../Notifiers/ReservationDoneNotifier.dart';
+import '../../Notifiers/ReservationStatusChangedNotifier.dart';
 import '../../Notifiers/UserIdProvider.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '../../CustomWidgets/CustomResCard.dart';
@@ -78,6 +79,10 @@ Map<String, dynamic> mapFirebaseDataToLocal(Map<String, dynamic> firebaseData) {
     'totalAmount' : firebaseData['totalamount'],
     'reservationTimeStamp' : firebaseData['timestamp'],
     'formattedDateString' : formattedDateString,
+    'reservationHour' : firebaseData['time'],
+    'reservationDate' : firebaseData['date'],
+    'reservationUserName' : firebaseData['name'],
+    'reservationUserPhone' : firebaseData['phone'],
   };
 }
 
@@ -196,6 +201,8 @@ class _CurrentReservationsWidgetState extends State<CurrentReservationsWidget>
     // Notifier to rebuild the page when a new reservation is done
     final reservationNotifier =
     Provider.of<ReservationDoneNotifier>(context);
+
+    final reservationStatusChanged = Provider.of<ReservationStatusChangedNotifier>(context);
     // Get the selected language from the provider
     final selectedLanguage = Provider.of<SelectedLanguage>(context);
 
@@ -309,6 +316,10 @@ class _CurrentReservationsWidgetState extends State<CurrentReservationsWidget>
               countdownDuration: reservation['reservationDuration'],
               timeBooked: reservation['timeBooked'],
               reservationTimeStamp: reservation['reservationTimeStamp'],
+              reservationHour: reservation['reservationHour'],
+              reservationDate: reservation['reservationDate'],
+              reservationUserName: reservation['reservationUserName'],
+              reservationUserPhone: reservation['reservationUserPhone'],
             ),
           );
         }).toList(),

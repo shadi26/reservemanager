@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:reserve/Notifiers/ReservationDoneNotifier.dart';
+import 'package:reserve/Notifiers/ReservationStatusChangedNotifier.dart';
 import '../../CustomWidgets/TimerWithLinearProgress.dart';
 import '../Notifiers/SelectedLanguage.dart';
 import 'CountdownTimer.dart';
@@ -32,6 +33,10 @@ class CustomResCard extends StatelessWidget {
   final String rid;
   final String totalAmount;
   final Timestamp reservationTimeStamp;
+  final String reservationHour;
+  final String reservationDate;
+  final String reservationUserName;
+  final String reservationUserPhone;
 
   const CustomResCard({
     Key? key,
@@ -48,6 +53,10 @@ class CustomResCard extends StatelessWidget {
     required this.rid,
     required this.totalAmount,
     required this.reservationTimeStamp,
+    required this.reservationHour,
+    required this.reservationDate,
+    required this.reservationUserName,
+    required this.reservationUserPhone,
   }) : super(key: key);
 
   @override
@@ -69,6 +78,10 @@ class CustomResCard extends StatelessWidget {
         rid: rid,
         totalAmount: totalAmount,
         reservationTimeStamp: reservationTimeStamp,
+        reservationHour: reservationHour,
+        reservationDate: reservationDate,
+        reservationUserName: reservationUserName,
+        reservationUserPhone: reservationUserPhone,
       ),
     );
   }
@@ -88,6 +101,10 @@ class CustomResCardWidget extends StatefulWidget {
   final String rid;
   final String totalAmount;
   final Timestamp reservationTimeStamp;
+  final String reservationHour;
+  final String reservationDate;
+  final String reservationUserName;
+  final String reservationUserPhone;
 
   const CustomResCardWidget({
     Key? key,
@@ -104,6 +121,10 @@ class CustomResCardWidget extends StatefulWidget {
     required this.rid,
     required this.totalAmount,
     required this.reservationTimeStamp,
+    required this.reservationHour,
+    required this.reservationDate,
+    required this.reservationUserName,
+    required this.reservationUserPhone,
 
   }) : super(key: key);
 
@@ -117,6 +138,18 @@ class _CustomResCardState extends State<CustomResCardWidget> {
   late Duration timeDifference;
   late int LinearProgressStartTime;
 
+  String convertPhoneToLocalFormat(String phoneNumber) {
+    // Assuming the country code is always +972 for Israel
+    const String countryCode = '+972';
+    const String localPrefix = '0';
+
+    if (phoneNumber.startsWith(countryCode)) {
+      return localPrefix + phoneNumber.substring(countryCode.length);
+    } else {
+      return phoneNumber; // Return the original number if it doesn't start with the country code
+    }
+  }
+
 
   Future<void> acceptReservation(
       String documentId, // Document ID of the reservation
@@ -128,6 +161,14 @@ class _CustomResCardState extends State<CustomResCardWidget> {
       await FirebaseFirestore.instance.collection('Reservations').doc(documentId).update({
         'status': 'Accepted', // Update the status to 'accepted'
       });
+
+      // Fetch the notifier
+      ReservationStatusChangedNotifier notifier = Provider.of<ReservationStatusChangedNotifier>(context, listen: false);
+
+
+
+      // Notify all listeners that a reservation status has changed
+      notifier.notifyReservationStatusChanged();
 
       // Show a Snackbar with the success message
       ScaffoldMessenger.of(context).showSnackBar(
@@ -155,6 +196,8 @@ class _CustomResCardState extends State<CustomResCardWidget> {
 
       // Increment the counter in the ReservationNumberProvider
       numberProvider.notifyReservationDone();
+
+
     } catch (error) {
       print('Error accepting reservation: $error');
     }
@@ -170,6 +213,14 @@ class _CustomResCardState extends State<CustomResCardWidget> {
       await FirebaseFirestore.instance.collection('Reservations').doc(documentId).update({
         'status': 'Rejected', // Update the status to 'accepted'
       });
+
+      // Fetch the notifier
+      ReservationStatusChangedNotifier notifier = Provider.of<ReservationStatusChangedNotifier>(context, listen: false);
+
+
+
+      // Notify all listeners that a reservation status has changed
+      notifier.notifyReservationStatusChanged();
 
       // Show a Snackbar with the success message
       ScaffoldMessenger.of(context).showSnackBar(
@@ -197,6 +248,7 @@ class _CustomResCardState extends State<CustomResCardWidget> {
 
       // Increment the counter in the ReservationNumberProvider
       numberProvider.notifyReservationDone();
+
     } catch (error) {
       print('Error accepting reservation: $error');
     }
@@ -398,12 +450,12 @@ class _CustomResCardState extends State<CustomResCardWidget> {
                 children: [
                   buildInfoContainer(
                     selectedLanguage.translate('reservationservicename'),
-                    selectedLanguage.translate(widget.venueName.toLowerCase()),
+                    selectedLanguage.translate(widget.reservationUserName),
                     selectedLanguage.selectedLanguage,
                   ),
                   buildInfoContainer(
                     selectedLanguage.translate('phone'),
-                    '', // Add the actual phone number here
+                    selectedLanguage.translate(convertPhoneToLocalFormat(widget.reservationUserPhone)), // Add the actual phone number here
                     selectedLanguage.selectedLanguage,
                   ),
                   buildInfoContainer(
@@ -413,17 +465,17 @@ class _CustomResCardState extends State<CustomResCardWidget> {
                   ),
                   buildInfoContainer(
                     selectedLanguage.translate('date'),
-                    widget.timeBooked,
+                    selectedLanguage.translate(widget.reservationDate),
                     selectedLanguage.selectedLanguage,
                   ),
                   buildInfoContainer(
                     selectedLanguage.translate('time'),
-                    '',
+                    selectedLanguage.translate(widget.reservationHour),
                     selectedLanguage.selectedLanguage,
                   ),
                   buildInfoContainer(
                     selectedLanguage.translate('rescardamount'),
-                    widget.totalAmount,
+                    selectedLanguage.translate(widget.totalAmount),
                     selectedLanguage.selectedLanguage,
                   ),
 

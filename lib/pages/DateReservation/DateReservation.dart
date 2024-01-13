@@ -23,12 +23,21 @@ class ReservationPage1Widget extends StatefulWidget {
 class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
   int counter = 0;
   late ReservationPage1Model _model;
-  late String decodedCircularImg;
-  late List<dynamic> decodedCircularImgList;
+  late String CircularImg = 'https://thumbs.dreamstime.com/z/modern-football-stadium-fans-stands-sport-match-background-digital-illustration-my-own-design-59107132.jpg?ct=jpeg' ;
   late String openningTime;
   late String closingTime;
   late String cardStatus;
-  Map<String, dynamic> cardData = {};
+  Map<String, dynamic> cardData = {
+    'title' : '',
+    'cardDetails' : '',
+    'circularimage' : 'https://thumbs.dreamstime.com/z/modern-football-stadium-fans-stands-sport-match-background-digital-illustration-my-own-design-59107132.jpg?ct=jpeg',
+    'city' : '',
+    'headLines' : '',
+    'imageUrls' : ['https://thumbs.dreamstime.com/z/modern-football-stadium-fans-stands-sport-match-background-digital-illustration-my-own-design-59107132.jpg?ct=jpeg'],
+    'weeklyStadiumOpeningSchedule' : '',
+    'latLng' : '',
+    'image' : 'https://thumbs.dreamstime.com/z/modern-football-stadium-fans-stands-sport-match-background-digital-illustration-my-own-design-59107132.jpg?ct=jpeg',
+  };
   bool isScheduleVisible = false;
   bool isPaymentVisible = false;
   bool isVacationVisible = false;
@@ -82,7 +91,6 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
       if(!selectedDates.contains(formattedDate))
       // Add selected date to the list
       selectedDates.add(formattedDate);
-      print('selectedDates=$selectedDates');
     });
   }
 
@@ -111,9 +119,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
           String currentDay = DateFormat('EEEE').format(DateTime.now());
           cardStatus = ReusableMethods.determineCardStatus(
               (data['weeklyStadiumOpeningSchedule'])[currentDay] ?? []);
-          decodedCircularImg = data["image"];
-          decodedCircularImgList = [];
-          decodedCircularImgList.add(decodedCircularImg);
+          CircularImg = data["image"];
         });
       }
     }).catchError((error) {
@@ -242,7 +248,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
                                   image: CachedNetworkImageProvider(
-                                    decodedCircularImg,
+                                    CircularImg,
                                   ),
                                   fit: BoxFit.cover,
                                 ),
@@ -265,7 +271,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                       child: Center(
                         child: Text(
                           selectedLanguage
-                              .translate(("" + cardData['title']).toLowerCase()),
+                              .translate(("" + cardData['title']?? '').toLowerCase()),
                           style: TextStyle(
                             fontSize: 35.0,
                             fontFamily: 'Amiri',
@@ -693,7 +699,6 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
             ElevatedButton(
               onPressed: () {
                 //for data base to send
-                print('Selected Dates: $selectedDates');
                 addSelectedDatesToFirestore();
 
               },

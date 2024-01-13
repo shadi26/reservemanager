@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:reserve/Notifiers/DrawerUserName.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Notifiers/UserIdProvider.dart';
 import '../../Notifiers/AuthProvider.dart';
@@ -19,16 +22,17 @@ class LoginPage extends StatelessWidget {
   late final authProvider;
 
 
-  Future<String> fetchUserName() async {
+
+
+  Future<Map<String, dynamic>> fetchUserData() async {
     User? currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
       DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).get();
       if (userDoc.exists) {
-        // Assuming the field in Firestore is named 'name'
-        return userDoc.get('name') ?? '';
+        return userDoc.data() as Map<String, dynamic>;
       }
     }
-    return '';
+    return {};
   }
 
   Future<UserCredential> signInWithGoogle(BuildContext context) async {
@@ -272,8 +276,14 @@ class LoginPage extends StatelessWidget {
 
                               // Fetch the user's name from Firestore and update UserNameProvider
                               if (userCredential.user != null) {
-                                String Name = await fetchUserName();
-                                Provider.of<UserNameProvider>(context, listen: false).setUserName("Welcome $Name");
+                                Map<String, dynamic> userData = await fetchUserData();
+
+                                // Convert userData to JSON string
+                                String userDataJson = jsonEncode(userData);
+
+                                // Save the JSON string in SharedPreferences
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                await prefs.setString('userData', userDataJson);
 
                                 // Set isAuthenticated to true in MyAuthProvider
                                 Provider.of<MyAuthProvider>(context, listen: false).setAuthenticated(true);

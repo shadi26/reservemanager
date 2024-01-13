@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:reserve/CustomWidgets/CustomDropdown.dart';
 import 'package:reserve/CustomWidgets/ShimmerLoading.dart';
+import 'package:reserve/Notifiers/ReservationStatusChangedNotifier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../CustomWidgets/CustomDrawer.dart';
 import '../../Notifiers/AuthProvider.dart';
@@ -57,6 +58,10 @@ Map<String, dynamic> mapFirebaseDataToLocal(Map<String, dynamic> firebaseData) {
     'totalAmount': firebaseData['totalamount'],
     'reservationTimeStamp': firebaseData['timestamp'],
     'formattedDateString': formattedDateString,
+    'reservationHour' : firebaseData['time'],
+    'reservationDate' : firebaseData['date'],
+    'reservationUserName' : firebaseData['name'],
+    'reservationUserPhone' : firebaseData['phone'],
   };
 }
 
@@ -130,6 +135,8 @@ class _ReservationScheduleState extends State<ReservationSchedule>
           .map((document) => mapFirebaseDataToLocal(document))
           .toList();
 
+
+
       setState(() {
         data = mappedData;
         _isDataLoaded = true;
@@ -161,71 +168,74 @@ class _ReservationScheduleState extends State<ReservationSchedule>
 
   @override
   Widget build(BuildContext context) {
-    context.watch<FFAppState>();
-    final authProvider = context.watch<MyAuthProvider>();
+        // Listen to the notifier
+        context.watch<ReservationStatusChangedNotifier>();
+        context.watch<FFAppState>();
+        final authProvider = context.watch<MyAuthProvider>();
 
-    return GestureDetector(
-      onTap: () => unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(unfocusNode)
-          : FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: Colors.grey[100],
-        appBar: AppBar(
-          backgroundColor: Color(0xFFD54D57),
-          automaticallyImplyLeading: true,
-          leading: IconButton(
-            icon: Icon(
-              Icons.menu,
-              color: Colors.white,
-              size: 24.0,
-            ),
-            onPressed: () {
-              scaffoldKey.currentState!.openDrawer();
-            },
-          ),
-          flexibleSpace: Container(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Image.asset(
-                'assets/icons/ReserveLogo.png',
-                width: 400.0,
-                height: 100.0,
-                fit: BoxFit.contain,
+        return GestureDetector(
+          onTap: () => unfocusNode.canRequestFocus
+              ? FocusScope.of(context).requestFocus(unfocusNode)
+              : FocusScope.of(context).unfocus(),
+          child: Scaffold(
+            key: scaffoldKey,
+            backgroundColor: Colors.grey[100],
+            appBar: AppBar(
+              backgroundColor: Color(0xFFD54D57),
+              automaticallyImplyLeading: true,
+              leading: IconButton(
+                icon: Icon(
+                  Icons.menu,
+                  color: Colors.white,
+                  size: 24.0,
+                ),
+                onPressed: () {
+                  scaffoldKey.currentState!.openDrawer();
+                },
               ),
-            ),
-          ),
-          centerTitle: true,
-          elevation: 4.0,
-        ),
-        drawer: CustomDrawer(
-          isAuthenticated: authProvider.isAuthenticated,
-        ),
-        body: DefaultTabController(
-          length: 2,
-          child: Column(
-            children: [
-
-              TabBar(
-                tabs: [
-                  Tab(text: 'Current'),
-                  Tab(text: 'Old'),
-                ],
-              ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    _TreeBuild(context, 'current'),
-                    _TreeBuild(context, 'old'),
-                  ],
+              flexibleSpace: Container(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.asset(
+                    'assets/icons/ReserveLogo.png',
+                    width: 400.0,
+                    height: 100.0,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
-            ],
+              centerTitle: true,
+              elevation: 4.0,
+            ),
+            drawer: CustomDrawer(
+              isAuthenticated: authProvider.isAuthenticated,
+            ),
+            body: DefaultTabController(
+              length: 2,
+              child: Column(
+                children: [
+                  TabBar(
+                    tabs: [
+                      Tab(text: 'Current'),
+                      Tab(text: 'Old'),
+                    ],
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      children: [
+                        _TreeBuild(context, 'current'),
+                        _TreeBuild(context, 'old'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
-    );
-  }
+        );
+      }
+
+
   String _getDayOfWeek(String dateString) {
     DateTime parsedDateTime = DateFormat('dd-MM-yyyy HH:mm').parse(dateString);
     return DateFormat('EEEE').format(parsedDateTime);
@@ -328,6 +338,10 @@ class _ReservationScheduleState extends State<ReservationSchedule>
                       countdownDuration: reservation['reservationDuration'],
                       timeBooked: reservation['timeBooked'],
                       reservationTimeStamp: reservation['reservationTimeStamp'],
+                      reservationHour: reservation['reservationHour'],
+                      reservationDate: reservation['reservationDate'],
+                      reservationUserName: reservation['reservationUserName'],
+                      reservationUserPhone: reservation['reservationUserPhone'],
                     ),
                   );
                 }
@@ -355,6 +369,10 @@ class _ReservationScheduleState extends State<ReservationSchedule>
                       countdownDuration: reservation['reservationDuration'],
                       timeBooked: reservation['timeBooked'],
                       reservationTimeStamp: reservation['reservationTimeStamp'],
+                      reservationHour: reservation['reservationHour'],
+                      reservationDate: reservation['reservationDate'],
+                      reservationUserName: reservation['reservationUserName'],
+                      reservationUserPhone: reservation['reservationUserPhone'],
                     ),
                   );
                 }

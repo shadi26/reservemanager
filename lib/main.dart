@@ -6,9 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:reserve/Notifiers/AuthProvider.dart';
-import 'package:reserve/Notifiers/CheckoutProvider.dart';
 import 'package:reserve/Notifiers/CurrentPageProvider.dart';
 import 'package:reserve/Notifiers/PaymentMethodNotifier.dart';
+import 'package:reserve/Notifiers/ReservationStatusChangedNotifier.dart';
 import 'package:reserve/Notifiers/SelectedServiceIdProvider.dart';
 import 'package:reserve/Notifiers/UserIdProvider.dart';
 import 'package:reserve/pages/ProfilePage/ProfilePage.dart';
@@ -137,10 +137,10 @@ void main() async {
       ChangeNotifierProvider.value(value: userIdProvider),
       ChangeNotifierProvider(create: (context) => MyAuthProvider()),
       ChangeNotifierProvider(create: (context) => SelectedLanguage()),
-      ChangeNotifierProvider(create: (context) => CheckoutProvider()),
       ChangeNotifierProvider(create: (context) => CurrentPageProvider()),
       ChangeNotifierProvider(create: (context) => ProfilePictureProvider()),
       ChangeNotifierProvider(create: (context) => ReservationDoneNotifier()),
+      ChangeNotifierProvider(create: (context) => ReservationStatusChangedNotifier()),
 
       // Other providers if any
     ],
