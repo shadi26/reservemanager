@@ -39,6 +39,23 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  void addSelectedDatesToFirestore() async {
+    final prefs = await SharedPreferences.getInstance();
+    String sid = prefs.getString('sid') ?? '';
+
+    if (sid.isNotEmpty) {
+
+      FirebaseFirestore.instance
+          .collection('servicesInACity')
+          .doc(sid)
+          .update({'VacationDates': selectedDates})
+          .then((_) => print("Selected dates added successfully"))
+          .catchError((error) => print("Failed to add selected dates: $error"));
+    } else {
+      print("No SID found in Shared Preferences");
+    }
+  }
+
   void getOpeningClosingTimesForToday(Map<String, dynamic> cardData) {
     String currentDay = DateFormat.EEEE().format(DateTime.now());
 
@@ -65,6 +82,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
       if(!selectedDates.contains(formattedDate))
       // Add selected date to the list
       selectedDates.add(formattedDate);
+      print('selectedDates=$selectedDates');
     });
   }
 
@@ -676,6 +694,8 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
               onPressed: () {
                 //for data base to send
                 print('Selected Dates: $selectedDates');
+                addSelectedDatesToFirestore();
+
               },
               child: Text('Save',
                 style: TextStyle(
