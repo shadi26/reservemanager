@@ -33,6 +33,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
   bool isPaymentVisible = false;
   bool isVacationVisible = false;
   List<String> selectedDates = [];
+  String PaymentAmount = '250';
   TextEditingController paymentController = TextEditingController();
 
 
@@ -169,23 +170,6 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
             ),
           ),
           actions: [
-            Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(10.0, 0.0, 0.0, 0.0),
-              child: InkWell(
-                splashColor: Colors.transparent,
-                focusColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.white,
-                  size: 30.0,
-                ),
-              ),
-            ),
           ],
           centerTitle: true,
           elevation: 4.0,
@@ -205,6 +189,13 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                     color: Colors.grey[100],
                     child: Stack(
                       children: [
+                        Container(
+                          height: 130,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Color(0xFFD54D57).withOpacity(0.8),
+                          ),
+                        ),
                         Positioned(
                           bottom: 78.0,
                           left: 0.0,
@@ -212,19 +203,10 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                           child: Container(
                             height: 40.0,
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.white.withOpacity(0.5),
-                                  Colors.white.withOpacity(0.12),
-                                  Colors.white.withOpacity(0.7),
-                                ],
-                              ),
                               border: Border(
                                 bottom: BorderSide(
-                                  color: Color(0xFFD54D57).withOpacity(0.9),
-                                  width: 5.0,
+                                  color: Colors.grey,
+                                  width:6.0,
                                 ),
                               ),
                             ),
@@ -247,7 +229,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                                   fit: BoxFit.cover,
                                 ),
                                 border: Border.all(
-                                  color: Color(0xFFD54D57),
+                                  color: Colors.grey,
                                   width: 5.0,
                                 ),
                               ),
@@ -267,7 +249,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                           selectedLanguage
                               .translate(("" + cardData['title']).toLowerCase()),
                           style: TextStyle(
-                            fontSize: 30.0,
+                            fontSize: 35.0,
                             fontFamily: 'Amiri',
                             fontWeight: FontWeight.bold,
                           ),
@@ -275,16 +257,24 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                       ),
                     ),
                   ),
-
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 30.0),
+                    child: Divider(
+                      color: Colors.grey.withOpacity(0.6),
+                      thickness: 1.2,
+                    ),
+                  ),
                   buildToggleContainer('Working Days', isScheduleVisible, toggleScheduleContainerVisibility, buildScheduleContainer(cardData)),
                   SizedBox(height: 20.0),
                   buildToggleContainer('Payment Settings', isPaymentVisible, togglePaymentContainerVisibility, buildpaymentContainer()),
                   SizedBox(height: 20.0),
                   buildToggleContainer('Vacation Settings', isVacationVisible, toggleVacationContainerVisibility, buildVacationContainer()),
-
+                  SizedBox(height: 20.0,),
                 ],
+
               ),
             ),
+
           ),
         ),
       ),
@@ -309,13 +299,18 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
           ],
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0,right: 20.0),
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Amiri',
+                ),
               ),
             ),
             SizedBox(width: 8.0),
@@ -323,6 +318,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
               icon: Icon(
                 isVisible ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
                 size: 30.0,
+                color:Color(0xFFD54D57) ,
               ),
               onPressed: toggleVisibility,
             ),
@@ -394,6 +390,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                     ? Icons.keyboard_arrow_up
                     : Icons.keyboard_arrow_down,
                 size: 30.0,
+                color:Color(0xFFD54D57),
               ),
               onPressed: toggleScheduleContainerVisibility,
             ),
@@ -421,7 +418,13 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
       // Show a success message using a Snackbar with a green background
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Price updated successfully'),
+          content: Text('Price updated successfully',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Amiri',
+              color: Colors.white,
+              fontSize: 15,
+            ),),
           duration: Duration(seconds: 2), // Optional: You can customize the duration
           backgroundColor: Colors.green, // Set the background color to green
         ),
@@ -462,14 +465,14 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
           children: [
             // Add your payment-related UI elements here
             Text(
-              'Specify the amount of payment:',
+              'Specify the amount of payment',
               style: TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Amiri'
               ),
             ),
             SizedBox(height: 10.0),
-
             Padding(
               padding: const EdgeInsets.fromLTRB(50.0, 5.0, 50.0, 5.0),
               child: Divider(
@@ -479,30 +482,53 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
             ),
             SizedBox(height: 10.0),
             Container(
-              width: 200.0,
+              child: Text('Current Amount: ${PaymentAmount}₪',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontFamily: 'Amiri',
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0,),
+            Container(
+              width: 150,
+              height: 40,
               child: TextField(
                 controller: paymentController,
                 decoration: InputDecoration(
-                  hintText: 'Enter amount',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
+                  hintText: '100₪',
+                  hintStyle: TextStyle(
+                    color: Colors.grey, // Hint text color
+                    fontFamily: 'Amiri',
+                  ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 50.0),
+                  // Adjust vertical padding
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15.0),
                     borderSide: BorderSide(
-                      color: Colors.grey.withOpacity(0.6),
+                      color: Colors.grey, // Border color when not focused
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                    // Set border radius here
+                    borderSide: BorderSide(
+                      color: Colors.black, // Border color when focused
                     ),
                   ),
                 ),
                 keyboardType: TextInputType.number,
               ),
             ),
-            SizedBox(height: 10.0),
+            SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
                 // Close the keyboard
                 FocusScope.of(context).unfocus();
-
                 // Retrieve the entered amount from the TextField
                 String paymentAmount = paymentController.text;
-
                 // Check if the TextField is not empty
                 if (paymentAmount.isNotEmpty) {
                   // Add logic to save the payment amount
@@ -514,12 +540,19 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                   print('Please enter a valid payment amount.');
                 }
               },
-              child: Text('Save Payment'),
+              child: Text('Save',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'Amiri',
+                  fontSize: 18.0,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                primary: Color(0xFFD54D57),
+              ),
+
             ),
-
-
             SizedBox(height: 10.0),
-
             IconButton(
               icon: Icon(
                 isPaymentVisible
@@ -538,7 +571,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
   Widget buildVacationContainer() {
     return isVacationVisible
         ? Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 20.0),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -565,6 +598,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
               style: TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Amiri',
               ),
             ),
             SizedBox(height: 10.0),
@@ -610,6 +644,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
+                      fontFamily: 'Amiri',
                     ),
                   ),
                   SizedBox(height: 5.0),
@@ -619,10 +654,12 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                       children: [
                         Text(
                           date,
-                          style: TextStyle(fontSize: 14.0),
+                          style: TextStyle(fontSize: 14.0
+                          ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.remove_circle),
+                          icon: Icon(Icons.remove_circle,
+                          color: Color(0xFFD54D57),),
                           onPressed: () {
                             // Remove the selected date
                             removeDate(date);
@@ -632,12 +669,22 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                     ),
                 ],
               ),
+            SizedBox(height: 10.0,),
             ElevatedButton(
               onPressed: () {
                 //for data base to send
                 print('Selected Dates: $selectedDates');
               },
-              child: Text('Save'),
+              child: Text('Save',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'Amiri',
+                  fontSize: 18.0,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                primary: Color(0xFFD54D57),
+              ),
             ),
             SizedBox(height: 10.0),
             IconButton(
