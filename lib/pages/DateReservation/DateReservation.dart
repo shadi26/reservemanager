@@ -416,7 +416,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
 
       // Update the 'price' field in the document
       await documentRef.update({'price': newPrice});
-
+      //
       // Show a success message using a Snackbar with a green background
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
