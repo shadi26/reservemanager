@@ -6,19 +6,12 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:reserve/Notifiers/AuthProvider.dart';
-import 'package:reserve/Notifiers/CurrentPageProvider.dart';
-import 'package:reserve/Notifiers/PaymentMethodNotifier.dart';
 import 'package:reserve/Notifiers/ReservationStatusChangedNotifier.dart';
-import 'package:reserve/Notifiers/SelectedServiceIdProvider.dart';
 import 'package:reserve/Notifiers/UserIdProvider.dart';
-import 'package:reserve/pages/ProfilePage/ProfilePage.dart';
-import 'package:reserve/pages/ServiceSelection/ServiceSelection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'LoginPage/LoginPage.dart';
+import 'pages/LoginPage/LoginPage.dart';
 import 'Notifiers/ReservationDoneNotifier.dart';
-import 'pages/Login/CustomPhoneInputWidget.dart';
 import 'Notifiers/DrawerUserName.dart';
-import 'Notifiers/LocationSelection.dart';
 import 'Notifiers/ProfilePictureProvider.dart';
 import 'Notifiers/SelectedLanguage.dart';
 import 'flutter_flow/flutter_flow_theme.dart';
@@ -129,15 +122,11 @@ void main() async {
   runApp(MultiProvider(
 
     providers: [
-      ChangeNotifierProvider(create: (_) => LocationSelectionNotifier()),
       ChangeNotifierProvider(create: (context) => appState),
       ChangeNotifierProvider.value(value: userNameProvider),
-      ChangeNotifierProvider(create: (context) => PaymentMethodNotifier()),
-      ChangeNotifierProvider(create: (context) => SelectedServiceIdProvider()),
       ChangeNotifierProvider.value(value: userIdProvider),
       ChangeNotifierProvider(create: (context) => MyAuthProvider()),
       ChangeNotifierProvider(create: (context) => SelectedLanguage()),
-      ChangeNotifierProvider(create: (context) => CurrentPageProvider()),
       ChangeNotifierProvider(create: (context) => ProfilePictureProvider()),
       ChangeNotifierProvider(create: (context) => ReservationDoneNotifier()),
       ChangeNotifierProvider(create: (context) => ReservationStatusChangedNotifier()),

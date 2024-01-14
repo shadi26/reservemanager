@@ -11,10 +11,6 @@ import '../language/language.dart';
 import '../language/language_constants.dart';
 import 'package:get/get.dart';
 import '../Notifiers/SelectedLanguage.dart'; // Import SelectedLanguage notifier
-import '../pages/Login/CustomNameEntryWidget.dart';
-import '../pages/ProfilePage/ProfilePage.dart';
-import '../pages/Login/CustomPhoneInputWidget.dart';
-import '../pages/ReservationCheckout/creditCardDialog.dart';
 import 'CustomConfirmationDialog.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -277,21 +273,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     final myAuthProvider = Provider.of<MyAuthProvider>(context, listen: false);
                     if ( ! myAuthProvider.isAuthenticated ) {
                       // User ID is null, navigate to CustomPhoneInputWidget
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        // Allow the bottom sheet to take up the full screen height
-                        builder: (BuildContext context) {
-                          // Return the widget that you want to show
-                          return CustomPhoneInputWidget();
-                        },
-                      );
                     } else {
                       // User ID is not null, navigate to ProfilePage
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ProfilePage()),
-                      );
                     }
                   },
                 ),

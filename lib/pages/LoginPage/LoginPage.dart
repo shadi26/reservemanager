@@ -11,8 +11,8 @@ import 'package:provider/provider.dart';
 import 'package:reserve/Notifiers/DrawerUserName.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../Notifiers/UserIdProvider.dart';
-import '../../Notifiers/AuthProvider.dart';
+import '../../../Notifiers/UserIdProvider.dart';
+import '../../../Notifiers/AuthProvider.dart';
 
 
 

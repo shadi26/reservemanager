@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../pages/Login/CustomPhoneInputWidget.dart';
 import 'DrawerUserName.dart';
 import 'ProfilePictureProvider.dart';
 import 'UserIdProvider.dart';
@@ -45,13 +44,6 @@ class MyAuthProvider with ChangeNotifier {
   void signIn(BuildContext context) {
     Navigator.pop(context);
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return CustomPhoneInputWidget();
-      },
-    );
 
   }
 
