@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:reserve/CustomWidgets/CustomDropdown.dart';
+import 'package:reserve/Notifiers/SelectedLanguage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DaySchedule extends StatefulWidget {
@@ -144,6 +146,7 @@ class _DayScheduleState extends State<DaySchedule> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedLanguage = Provider.of<SelectedLanguage>(context);
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -152,7 +155,7 @@ class _DayScheduleState extends State<DaySchedule> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                widget.day,
+                selectedLanguage.translate((widget.day).toLowerCase()),
                 style: TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
@@ -175,7 +178,7 @@ class _DayScheduleState extends State<DaySchedule> {
             Row(
               children: [
                 Text(
-                  'From:',
+    selectedLanguage.translate('from')+": ",
                   style: TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,
@@ -196,7 +199,7 @@ class _DayScheduleState extends State<DaySchedule> {
                 ),
                 SizedBox(width: 20.0),
                 Text(
-                  'To:',
+                  selectedLanguage.translate('to')+': ',
                   style: TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,
@@ -225,7 +228,7 @@ class _DayScheduleState extends State<DaySchedule> {
               updateStadiumOpeningHours();
             },
             child: Text(
-              'Save',
+    selectedLanguage.translate('savebtn'),
               style: TextStyle(
                 color: Colors.white,
                 fontFamily: 'Amiri',

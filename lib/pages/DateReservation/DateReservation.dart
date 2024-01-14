@@ -288,11 +288,11 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                       thickness: 1.2,
                     ),
                   ),
-                  buildToggleContainer('Working Days', isScheduleVisible, toggleScheduleContainerVisibility, buildScheduleContainer(cardData)),
+                  buildToggleContainer('schedulesettings', isScheduleVisible, toggleScheduleContainerVisibility, buildScheduleContainer(cardData)),
                   SizedBox(height: 20.0),
-                  buildToggleContainer('Payment Settings', isPaymentVisible, togglePaymentContainerVisibility, buildpaymentContainer()),
+                  buildToggleContainer('paymentsettings', isPaymentVisible, togglePaymentContainerVisibility, buildpaymentContainer()),
                   SizedBox(height: 20.0),
-                  buildToggleContainer('Vacation Settings', isVacationVisible, toggleVacationContainerVisibility, buildVacationContainer()),
+                  buildToggleContainer('vacationsettings', isVacationVisible, toggleVacationContainerVisibility, buildVacationContainer()),
                   SizedBox(height: 20.0,),
                 ],
 
@@ -306,6 +306,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
   }
 
   Widget buildToggleContainer(String title, bool isVisible, void Function()? toggleVisibility, Widget content) {
+    final selectedLanguage = Provider.of<SelectedLanguage>(context);
     return Visibility(
       visible: !isVisible,
       child: Container(
@@ -329,7 +330,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
             Padding(
               padding: const EdgeInsets.only(left: 20.0,right: 20.0),
               child: Text(
-                title,
+                selectedLanguage.translate(title),
                 style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
@@ -353,6 +354,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
     );
   }
   Widget buildScheduleContainer(Map<String, dynamic> cardData) {
+    final selectedLanguage = Provider.of<SelectedLanguage>(context);
     return isScheduleVisible
         ? Padding(
       padding: const EdgeInsets.all(8.0),
@@ -378,7 +380,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Days of the Week',
+                selectedLanguage.translate('weeklyschedule'),
               style: TextStyle(
                 fontSize: 25.0,
                 fontFamily: 'Amiri',
@@ -430,6 +432,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
 
 
   void updatePriceInFirestore(String newPrice) async {
+    final selectedLanguage = Provider.of<SelectedLanguage>(context);
     try {
       // Retrieve the 'sid' from shared preferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -444,7 +447,8 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
       // Show a success message using a Snackbar with a green background
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Price updated successfully',
+          content: Text(
+            selectedLanguage.translate('priceupdatedsuccessfully'),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Amiri',
@@ -465,6 +469,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
   }
 
   Widget buildpaymentContainer() {
+    final selectedLanguage = Provider.of<SelectedLanguage>(context);
     return isPaymentVisible
         ? Padding(
       padding: const EdgeInsets.all(8.0),
@@ -491,7 +496,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
           children: [
             // Add your payment-related UI elements here
             Text(
-              'Specify the amount of payment',
+            selectedLanguage.translate('specifypaymentamount'),
               style: TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
@@ -508,7 +513,9 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
             ),
             SizedBox(height: 10.0),
             Container(
-              child: Text('Current Amount: ${PaymentAmount}₪',
+              child: Text(
+                selectedLanguage.translate('currentamount')
+                +': ${PaymentAmount}₪',
                 style: TextStyle(
                   color: Colors.black,
                   fontFamily: 'Amiri',
@@ -566,7 +573,8 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                   print('Please enter a valid payment amount.');
                 }
               },
-              child: Text('Save',
+              child: Text(
+                selectedLanguage.translate('savebtn'),
                 style: TextStyle(
                   color: Colors.white,
                   fontFamily: 'Amiri',
@@ -595,6 +603,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
         : Container();
   }
   Widget buildVacationContainer() {
+    final selectedLanguage = Provider.of<SelectedLanguage>(context);
     return isVacationVisible
         ? Padding(
       padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 20.0),
@@ -620,7 +629,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Choose vacation days:',
+                selectedLanguage.translate('choosevacationdays')+':',
               style: TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
@@ -666,7 +675,7 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Selected Dates:',
+                      selectedLanguage.translate('selecteddates')+':',
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
@@ -702,7 +711,8 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
                 addSelectedDatesToFirestore();
 
               },
-              child: Text('Save',
+              child: Text(
+                selectedLanguage.translate('savebtn'),
                 style: TextStyle(
                   color: Colors.white,
                   fontFamily: 'Amiri',

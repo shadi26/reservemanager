@@ -168,72 +168,185 @@ class _ReservationScheduleState extends State<ReservationSchedule>
 
   @override
   Widget build(BuildContext context) {
-        // Listen to the notifier
-        context.watch<ReservationStatusChangedNotifier>();
-        context.watch<FFAppState>();
-        final authProvider = context.watch<MyAuthProvider>();
+    // Listen to the notifier
+    context.watch<ReservationStatusChangedNotifier>();
+    context.watch<FFAppState>();
+    final authProvider = context.watch<MyAuthProvider>();
 
-        return GestureDetector(
-          onTap: () => unfocusNode.canRequestFocus
-              ? FocusScope.of(context).requestFocus(unfocusNode)
-              : FocusScope.of(context).unfocus(),
-          child: Scaffold(
-            key: scaffoldKey,
-            backgroundColor: Colors.grey[100],
-            appBar: AppBar(
-              backgroundColor: Color(0xFFD54D57),
-              automaticallyImplyLeading: true,
-              leading: IconButton(
-                icon: Icon(
-                  Icons.menu,
-                  color: Colors.white,
-                  size: 24.0,
-                ),
-                onPressed: () {
-                  scaffoldKey.currentState!.openDrawer();
-                },
-              ),
-              flexibleSpace: Container(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: Image.asset(
-                    'assets/icons/ReserveLogo.png',
-                    width: 400.0,
-                    height: 100.0,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              centerTitle: true,
-              elevation: 4.0,
+    return GestureDetector(
+      onTap: () => unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(unfocusNode)
+          : FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        key: scaffoldKey,
+        backgroundColor: Colors.grey[100],
+        appBar: AppBar(
+          backgroundColor: Color(0xFFD54D57),
+          automaticallyImplyLeading: true,
+          leading: IconButton(
+            icon: Icon(
+              Icons.menu,
+              color: Colors.white,
+              size: 24.0,
             ),
-            drawer: CustomDrawer(
-              isAuthenticated: authProvider.isAuthenticated,
+            onPressed: () {
+              scaffoldKey.currentState!.openDrawer();
+            },
+          ),
+          flexibleSpace: Container(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: Image.asset(
+                'assets/icons/ReserveLogo.png',
+                width: 400.0,
+                height: 100.0,
+                fit: BoxFit.contain,
+              ),
             ),
-            body: DefaultTabController(
-              length: 2,
-              child: Column(
-                children: [
-                  TabBar(
-                    tabs: [
-                      Tab(text: 'Current'),
-                      Tab(text: 'Old'),
-                    ],
-                  ),
-                  Expanded(
-                    child: TabBarView(
+          ),
+          centerTitle: true,
+          elevation: 4.0,
+        ),
+        drawer: CustomDrawer(
+          isAuthenticated: authProvider.isAuthenticated,
+        ),
+        body: DefaultTabController(
+          length: 2,
+          child: Column(
+            children: [
+              TabBar(
+                labelColor: Colors.black,
+                unselectedLabelColor: Colors.grey,
+                labelStyle: TextStyle(
+                  fontFamily: 'Amiri',
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+                unselectedLabelStyle: TextStyle(
+                  fontFamily: 'Amiri',
+                ),
+                indicatorColor: Color(0xFFD54D57),
+                padding: EdgeInsetsDirectional.fromSTEB(4.0, 4.0, 4.0, 4.0),
+                tabs: [
+                  Tab(text: 'Current'),
+                  Tab(text: 'Old'),
+                ],
+              ),
+              Expanded(
+                child: Stack(
+                  children: [
+                    TabBarView(
                       children: [
                         _TreeBuild(context, 'current'),
                         _TreeBuild(context, 'old'),
                       ],
                     ),
-                  ),
-                ],
+                    Positioned(
+                      top: 0, // Adjust this value based on your UI design
+                      left: 0,
+                      right: 0,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            border: Border.all(
+                              color: Colors.grey.withOpacity(0.6),
+                              width: 1.2,
+                            ),
+                            borderRadius: BorderRadius.circular(25.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 10,
+                                offset: Offset(0, 5), // Adjust the offset if needed
+                              ),
+
+                            ],
+                          ),
+
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Days:',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontFamily: 'Amiri',
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 10.0,
+                                    ),
+                                    CustomDropdown(
+                                      value: dayFilter,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          dayFilter = value!;
+                                        });
+                                      },
+                                      items: [
+                                        'All',
+                                        'Monday',
+                                        'Tuesday',
+                                        'Wednesday',
+                                        'Thursday',
+                                        'Friday',
+                                        'Saturday',
+                                        'Sunday'
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Status:',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontFamily: 'Amiri',
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 10.0,
+                                    ),
+                                    CustomDropdown(
+                                      value: filter,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          filter = value!;
+                                        });
+                                      },
+                                      items: ['All', 'Accepted', 'Rejected'],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
-        );
-      }
+        ),
+      ),
+    );
+  }
+
 
 
   String _getDayOfWeek(String dateString) {
@@ -244,64 +357,65 @@ class _ReservationScheduleState extends State<ReservationSchedule>
     data.sort((a, b) => a['timeBooked'].compareTo(b['timeBooked']));
 
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Text('Days:',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: 'Amiri',
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),),
-                      SizedBox(width: 10.0,),
-                      CustomDropdown(
-                        value: dayFilter,
-                        onChanged: (value) {
-                          setState(() {
-                            dayFilter = value!;
-                          });
-                        },
-                          items: ['All', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text('Status:',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: 'Amiri',
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),),
-                      SizedBox(width: 10.0,),
-                      CustomDropdown(
-                          value: filter,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 15.0),
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text('Days:',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'Amiri',
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),),
+                        SizedBox(width: 10.0,),
+                        CustomDropdown(
+                          value: dayFilter,
                           onChanged: (value) {
                             setState(() {
-                              filter = value!;
+                              dayFilter = value!;
                             });
                           },
-                          items: ['All', 'Accepted', 'Rejected']
-                      ),
+                            items: ['All', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text('Status:',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'Amiri',
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),),
+                        SizedBox(width: 10.0,),
+                        CustomDropdown(
+                            value: filter,
+                            onChanged: (value) {
+                              setState(() {
+                                filter = value!;
+                              });
+                            },
+                            items: ['All', 'Accepted', 'Rejected']
+                        ),
 
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          SingleChildScrollView(
-            child: Column(
+            Column(
               mainAxisSize: MainAxisSize.max,
               children: data
                   .where((reservation) =>
@@ -380,10 +494,9 @@ class _ReservationScheduleState extends State<ReservationSchedule>
                 return Container();
               }).toList(),
             ),
-
-          ),
-          SizedBox(height: 20.0,),
-        ],
+            SizedBox(height: 20.0,),
+          ],
+        ),
       ),
     );
   }
