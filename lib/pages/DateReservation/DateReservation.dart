@@ -11,6 +11,7 @@ import 'package:reserve/CustomWidgets/MyCustomCalendar.dart';
 import 'package:reserve/app_state.dart';
 import 'package:reserve/flutter_flow/flutter_flow_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../CustomWidgets/CustomDrawer.dart';
 import 'reservation_page1_model.dart';
 //
 class ReservationPage1Widget extends StatefulWidget {
@@ -167,6 +168,9 @@ class _ReservationPage1WidgetState extends State<ReservationPage1Widget> {
           : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
+        drawer: CustomDrawer(
+          isAuthenticated: true,
+        ),
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
           backgroundColor: Color(0xFFD54D57),

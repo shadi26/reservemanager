@@ -120,46 +120,6 @@ class LoginPage extends StatelessWidget {
                   child: Stack(
                     children: <Widget>[
                       Positioned(
-                        left: 30,
-                        width: 80,
-                        height: 200,
-                        child: FadeInUp(
-                            duration: Duration(seconds: 1),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      image: AssetImage(
-                                          'assets/images/light-1.png'))),
-                            )),
-                      ),
-                      Positioned(
-                        left: 140,
-                        width: 80,
-                        height: 150,
-                        child: FadeInUp(
-                            duration: Duration(milliseconds: 1200),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      image: AssetImage(
-                                          'assets/images/light-2.png'))),
-                            )),
-                      ),
-                      Positioned(
-                        right: 40,
-                        top: 40,
-                        width: 80,
-                        height: 150,
-                        child: FadeInUp(
-                            duration: Duration(milliseconds: 1300),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      image: AssetImage(
-                                          'assets/images/clock.png'))),
-                            )),
-                      ),
-                      Positioned(
                         child: FadeInUp(
                             duration: Duration(milliseconds: 1600),
                             child: Container(
@@ -230,36 +190,6 @@ class LoginPage extends StatelessWidget {
                           )),
                       SizedBox(
                         height: 30,
-                      ),
-
-                      // Row for Facebook, Google, and Phone Login Buttons
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-
-                          // Google Login Button
-                          FadeInUp(
-                            duration: Duration(milliseconds: 2200),
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.g_translate,
-                                // Use the "Google" icon from flutter_icons,
-                                color: Colors.red, // Change the color as needed
-                                size: 40.0,
-                              ),
-                              onPressed: () async{
-                                // Add your Google login logic here
-                                try {
-                                  await signInWithGoogle(context);
-                                  // Navigate to the next screen if successful
-                                } catch (e) {
-                                  // Handle error (e.g., show a message)
-                                }
-                              },
-                            ),
-                          ),
-
-                        ],
                       ),
 
                       // Modify the "Login" button to use signInWithEmailPassword
