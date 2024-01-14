@@ -41,6 +41,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:377758336231:android:fa3f48d058b5d8f630ce42",
+        "android_client_info": {
+          "package_name": "com.SM_Tech.reserveManager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "377758336231-kh2veu44g9p0jjmit12gl73v4nden6lt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdGB7oYlngxqoeqMyTrMpnJAOerQxNjI0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "377758336231-kh2veu44g9p0jjmit12gl73v4nden6lt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
