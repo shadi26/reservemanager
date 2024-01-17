@@ -78,11 +78,14 @@ class _ReservationScheduleState extends State<ReservationSchedule>
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<Map<String, dynamic>> data = [];
   bool _isDataLoaded = false;
-  String filter = 'All'; // Default filter value
-  String dayFilter = 'All'; // Default day filter value
+
+ late String filter ;
+  late String dayFilter;
+  late String resResult;
 
 
   Future<List<Map<String, dynamic>>> fetchReservations(String sid) async {
+    final selectedLanguage = Provider.of<SelectedLanguage>(context);
     try {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
       CollectionReference<Map<String, dynamic>> collection =
@@ -94,17 +97,18 @@ class _ReservationScheduleState extends State<ReservationSchedule>
       List<Map<String, dynamic>> reservations = querySnapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
           .toList();
-
       return reservations;
     } catch (e) {
       print('Error fetching reservations: $e');
       return [];
     }
+
   }
 
   Future<String?> getUserId(BuildContext context) async {
     return Provider.of<UserIdProvider>(context).userId;
   }
+
 
   @override
   void initState() {
@@ -164,6 +168,9 @@ class _ReservationScheduleState extends State<ReservationSchedule>
         print('User ID is null.');
       }
     });
+    // Initialize filter and dayFilter with translated values
+    filter = Provider.of<SelectedLanguage>(context).translate('all');
+    dayFilter = Provider.of<SelectedLanguage>(context).translate('all');
   }
 
   @override
@@ -172,7 +179,7 @@ class _ReservationScheduleState extends State<ReservationSchedule>
     context.watch<ReservationStatusChangedNotifier>();
     context.watch<FFAppState>();
     final authProvider = context.watch<MyAuthProvider>();
-
+    final selectedLanguage = Provider.of<SelectedLanguage>(context);
     return GestureDetector(
       onTap: () => unfocusNode.canRequestFocus
           ? FocusScope.of(context).requestFocus(unfocusNode)
@@ -229,8 +236,14 @@ class _ReservationScheduleState extends State<ReservationSchedule>
                 indicatorColor: Color(0xFFD54D57),
                 padding: EdgeInsetsDirectional.fromSTEB(4.0, 4.0, 4.0, 4.0),
                 tabs: [
-                  Tab(text: 'Current'),
-                  Tab(text: 'Old'),
+                  Tab(
+                    text: selectedLanguage
+                        .translate('currentreservation'),
+                  ),
+                  Tab(
+                    text: selectedLanguage
+                        .translate('previousreservation'),
+                  ),
                 ],
               ),
               Expanded(
@@ -275,7 +288,7 @@ class _ReservationScheduleState extends State<ReservationSchedule>
                                 Row(
                                   children: [
                                     Text(
-                                      'Days:',
+                                      '${selectedLanguage.translate('days')}'+':',
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontFamily: 'Amiri',
@@ -287,21 +300,21 @@ class _ReservationScheduleState extends State<ReservationSchedule>
                                       width: 10.0,
                                     ),
                                     CustomDropdown(
-                                      value: dayFilter,
+                                      value: selectedLanguage.translate(dayFilter),
                                       onChanged: (value) {
                                         setState(() {
                                           dayFilter = value!;
                                         });
                                       },
                                       items: [
-                                        'All',
-                                        'Monday',
-                                        'Tuesday',
-                                        'Wednesday',
-                                        'Thursday',
-                                        'Friday',
-                                        'Saturday',
-                                        'Sunday'
+                                        selectedLanguage.translate('all'),
+                                        selectedLanguage.translate('monday'),
+                                        selectedLanguage.translate('tuesday'),
+                                        selectedLanguage.translate('wednesday'),
+                                        selectedLanguage.translate('thursday'),
+                                        selectedLanguage.translate('friday'),
+                                        selectedLanguage.translate('saturday'),
+                                        selectedLanguage.translate('sunday')
                                       ],
                                     ),
                                   ],
@@ -309,7 +322,7 @@ class _ReservationScheduleState extends State<ReservationSchedule>
                                 Row(
                                   children: [
                                     Text(
-                                      'Status:',
+                                      '${selectedLanguage.translate('reservatiostatus')}'+':',
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontFamily: 'Amiri',
@@ -321,13 +334,13 @@ class _ReservationScheduleState extends State<ReservationSchedule>
                                       width: 10.0,
                                     ),
                                     CustomDropdown(
-                                      value: filter,
+                                      value: selectedLanguage.translate(filter),
                                       onChanged: (value) {
                                         setState(() {
                                           filter = value!;
                                         });
                                       },
-                                      items: ['All', 'Accepted', 'Rejected'],
+                                      items: [selectedLanguage.translate('all'), selectedLanguage.translate('accepted'), selectedLanguage.translate('rejected')],
                                     ),
                                   ],
                                 ),
@@ -356,6 +369,7 @@ class _ReservationScheduleState extends State<ReservationSchedule>
   Widget _TreeBuild(BuildContext context, String reservationType) {
     data.sort((a, b) => a['timeBooked'].compareTo(b['timeBooked']));
 
+    final selectedLanguage = Provider.of<SelectedLanguage>(context);
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.only(top: 15.0),
@@ -365,64 +379,19 @@ class _ReservationScheduleState extends State<ReservationSchedule>
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text('Days:',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'Amiri',
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),),
-                        SizedBox(width: 10.0,),
-                        CustomDropdown(
-                          value: dayFilter,
-                          onChanged: (value) {
-                            setState(() {
-                              dayFilter = value!;
-                            });
-                          },
-                            items: ['All', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text('Status:',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'Amiri',
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),),
-                        SizedBox(width: 10.0,),
-                        CustomDropdown(
-                            value: filter,
-                            onChanged: (value) {
-                              setState(() {
-                                filter = value!;
-                              });
-                            },
-                            items: ['All', 'Accepted', 'Rejected']
-                        ),
 
-                      ],
-                    ),
-                  ],
-                ),
               ),
             ),
+            SizedBox(height: 50.0,),
             Column(
               mainAxisSize: MainAxisSize.max,
               children: data
                   .where((reservation) =>
               reservation['reservationType'] == reservationType &&
                   reservation['reservationResult'] != 'pending' &&
-                  (filter == 'All' || reservation['reservationResult'] == filter) &&
-                  (dayFilter == 'All' || _getDayOfWeek(reservation['timeBooked']) == dayFilter))
+                  (filter == selectedLanguage.translate('all') || selectedLanguage.translate(reservation['reservationResult'].toLowerCase()) == filter) &&
+                  (dayFilter == selectedLanguage.translate('all') || selectedLanguage.translate((_getDayOfWeek(reservation['timeBooked'])).toLowerCase()
+                  ) == dayFilter))
                   .map((reservation) {
                 DateTime parsedDateTime =
                 DateFormat('dd-MM-yyyy HH:mm').parse(reservation['timeBooked']);

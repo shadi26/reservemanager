@@ -287,6 +287,7 @@ class _CustomResCardState extends State<CustomResCardWidget> {
 
     super.initState();
     resResult = widget.reservationResult;
+    print(widget.reservationResult);
   }
 
 
@@ -507,7 +508,7 @@ class _CustomResCardState extends State<CustomResCardWidget> {
                               onTimerFinished: () {
                                 setState(() {
                                   // Update the text or take any action
-                                  resResult = 'Rejected';
+                                  resResult = 'rejected';
                                 });
                               },
                             )
@@ -521,7 +522,7 @@ class _CustomResCardState extends State<CustomResCardWidget> {
                                   : TextDirection.rtl,
                               child: Text(
                                 selectedLanguage.translate('reservatiostatus') +
-                                    ': ${selectedLanguage.translate(resResult)}',
+                                    ': ${selectedLanguage.translate(resResult.toLowerCase())}',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontFamily: 'Amiri',
@@ -562,7 +563,7 @@ class _CustomResCardState extends State<CustomResCardWidget> {
                                     setState(() {
                                       rejectReservation(
                                           widget.rid, model, numberProvider, context);
-                                      resResult='Rejected';
+                                      resResult='rejected';
                                     });
                                   },
                                 );
@@ -591,7 +592,7 @@ class _CustomResCardState extends State<CustomResCardWidget> {
                                 setState(() {
                                   acceptReservation(
                                       widget.rid, model, numberProvider, context);
-                                  resResult='Accepted';
+                                  resResult='accepted';
                                 }
                                 );
                               },

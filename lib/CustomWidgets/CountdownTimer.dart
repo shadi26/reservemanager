@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:reserve/Notifiers/SelectedLanguage.dart';
 
 class CountdownTimer extends StatefulWidget {
   final Duration startTime;
@@ -45,6 +47,8 @@ class _CountdownTimerState extends State<CountdownTimer> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedLanguage = Provider.of<SelectedLanguage>(context);
+
     int days = _remainingSeconds ~/ (24 * 3600);
     int hours = (_remainingSeconds % (24 * 3600)) ~/ 3600;
     int minutes = (_remainingSeconds % 3600) ~/ 60;
@@ -59,13 +63,13 @@ class _CountdownTimerState extends State<CountdownTimer> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildTimeUnit(days, 'Days'),
+          _buildTimeUnit(days, selectedLanguage.translate('days')),
           _buildDivider(),
-          _buildTimeUnit(hours, 'Hours'),
+          _buildTimeUnit(hours, selectedLanguage.translate('hours')),
           _buildDivider(),
-          _buildTimeUnit(minutes, 'Minutes'),
+          _buildTimeUnit(minutes, selectedLanguage.translate('minutes')),
           _buildDivider(),
-          _buildTimeUnit(seconds, 'Seconds'),
+          _buildTimeUnit(seconds, selectedLanguage.translate('seconds')),
         ],
       ),
     );

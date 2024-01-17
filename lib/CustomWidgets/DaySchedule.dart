@@ -58,9 +58,7 @@ class _DayScheduleState extends State<DaySchedule> {
     super.initState();
     selectedOpeningHour = widget.openningHour;
     selectedClosingHour = widget.closingHour;
-    selectedOption = widget.openningHour == 'Closed' ? 'Closed' : 'Opened';
-    print('selectedOpeningHour=$selectedOpeningHour');
-    print('selectedClosingHour=$selectedClosingHour');
+
 
     // Initialize time options with half hour difference between them
     timeOptions = [
@@ -69,9 +67,19 @@ class _DayScheduleState extends State<DaySchedule> {
           '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}'
     ];
   }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
+    // Initialize selectedOption based on widget.openningHour
+    selectedOption = widget.openningHour == 'Closed'
+        ? Provider.of<SelectedLanguage>(context).translate('closed')
+        : Provider.of<SelectedLanguage>(context).translate('open');
+
+  }
   // Function to save working hours to the list
   void saveWorkingHoursToList() {
+    final selectedLanguage = Provider.of<SelectedLanguage>(context);
     try {
       // Split the selected hours into components
       List<String> openingComponents = selectedOpeningHour.split(':');
@@ -125,7 +133,7 @@ class _DayScheduleState extends State<DaySchedule> {
       // Save working hours data in the map
       Map<String, dynamic> workingHoursData = {
         'day': widget.day,
-        'selectedOption': selectedOption,
+        'selectedOption': selectedLanguage.translate(selectedOption),
         'selectedOpeningHour': selectedOpeningHour,
         'selectedClosingHour': selectedClosingHour,
         'separation': separation,
@@ -164,17 +172,18 @@ class _DayScheduleState extends State<DaySchedule> {
               ),
               SizedBox(width: 8.0),
               CustomDropdown(
-                value: selectedOption,
+                value: selectedLanguage.translate(selectedOption),
                 onChanged: (value) {
                   setState(() {
-                    selectedOption = value;
+                    selectedOption = value!;
                   });
                 },
-                items: ['Opened', 'Closed'],
+                items: [selectedLanguage.translate('open'),
+                  selectedLanguage.translate('closed')],
               ),
             ],
           ),
-          if (selectedOption == 'Opened') ...[
+          if (selectedOption == selectedLanguage.translate('open')) ...[
             Row(
               children: [
                 Text(
