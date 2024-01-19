@@ -11,7 +11,7 @@ import '../../Notifiers/AuthProvider.dart';
 import '../../Notifiers/ReservationDoneNotifier.dart';
 import '../../Notifiers/ReservationStatusChangedNotifier.dart';
 import '../../Notifiers/UserIdProvider.dart';
-import '/flutter_flow/flutter_flow_util.dart';
+import '../../CustomWidgets/CustomUtill.dart';
 import '../../CustomWidgets/CustomResCard.dart';
 import '../../Notifiers/SelectedLanguage.dart';
 

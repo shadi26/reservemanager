@@ -14,8 +14,7 @@ import 'Notifiers/ReservationDoneNotifier.dart';
 import 'Notifiers/DrawerUserName.dart';
 import 'Notifiers/ProfilePictureProvider.dart';
 import 'Notifiers/SelectedLanguage.dart';
-import 'flutter_flow/flutter_flow_theme.dart';
-import 'flutter_flow/flutter_flow_util.dart';
+import 'CustomWidgets/CustomUtill.dart';
 import 'index.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
@@ -112,7 +111,6 @@ void main() async {
   UserNameProvider userNameProvider = UserNameProvider();
   await userNameProvider.loadUserNameFromPreferences();
 
-  await FlutterFlowTheme.initialize();
 
   final appState = FFAppState(); // Initialize FFAppState
   await appState.initializePersistedState();
@@ -166,7 +164,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeMode _themeMode = FlutterFlowTheme.themeMode;
   late PersistentTabController _controller;
   late Future<void> dataLoading;
   late ConnectivityResult _connectivityResult;
@@ -337,10 +334,6 @@ class _MyAppState extends State<MyApp> {
   }
 
 
-  void setThemeMode(ThemeMode mode) => setState(() {
-    _themeMode = mode;
-    FlutterFlowTheme.saveThemeMode(mode);
-  });
 
   List<PersistentBottomNavBarItem> _navBarItems() {
     final selectedLanguage = Provider.of<SelectedLanguage>(context);

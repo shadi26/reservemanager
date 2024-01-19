@@ -12,7 +12,7 @@ import '../../CustomWidgets/CustomDrawer.dart';
 import '../../Notifiers/AuthProvider.dart';
 import '../../Notifiers/ReservationDoneNotifier.dart';
 import '../../Notifiers/UserIdProvider.dart';
-import '/flutter_flow/flutter_flow_util.dart';
+import '../../CustomWidgets/CustomUtill.dart';
 import '../../CustomWidgets/CustomResCard.dart';
 import '../../Notifiers/SelectedLanguage.dart';
 import 'package:intl/intl.dart';

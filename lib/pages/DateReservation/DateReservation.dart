@@ -9,7 +9,7 @@ import 'package:reserve/CustomWidgets/ReusableMethods.dart';
 import 'package:reserve/Notifiers/SelectedLanguage.dart';
 import 'package:reserve/CustomWidgets/MyCustomCalendar.dart';
 import 'package:reserve/app_state.dart';
-import 'package:reserve/flutter_flow/flutter_flow_model.dart';
+import 'package:reserve/CustomWidgets/Custommodel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../CustomWidgets/CustomDrawer.dart';
 import 'reservation_page1_model.dart';
